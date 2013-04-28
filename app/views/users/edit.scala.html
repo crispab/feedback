@@ -1,0 +1,118 @@
+@(userForm: Form[User], idToUpdate: Option[Long] = None)(implicit loggedInUser: Option[User])
+
+@import util.FormHelper._
+@import util.Section._
+
+@field(fieldName: String) = @{ userForm(fieldName).value.getOrElse("") }
+
+@hasErrors(fieldName: String) = @{ if(userForm(fieldName).hasErrors) { "error" } }
+
+@userIsAdmin() = @{field("administrator") == "true"}
+
+@updating() = @{
+  idToUpdate.isDefined
+}
+
+
+@theAction() = @{
+  if(updating()) {
+    routes.Users.update(idToUpdate.get)
+  } else {
+    routes.Users.create()
+  }
+}
+
+
+@page("Redigera användare" +  field("firstName") + field("lastName"), section = Users) {
+
+  @if(updating()) {
+    @breadcrumb(Seq("Användare" -> routes.Users.list(), field("firstName") + " " + field("lastName") -> routes.Users.show(idToUpdate.get)),
+      "Redigera")
+  } else {
+    @breadcrumb(Seq("Användare" -> routes.Users.list()), "Ny")
+  }
+
+  <div class="row">
+    <div class="span5">
+      <h2>@if(updating()) {Redigera} else {Ny} Användare</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span5">
+      <form class="form-horizontal" action="@theAction()" method="POST">
+        <fieldset>
+
+          <div class='control-group @hasErrors("firstName")'>
+            <label class="control-label" for="firstName">Förnamn</label>
+            <div class="controls">
+              <input type="text" maxlength="127" class="input-xlarge" id="firstName" name="firstName" value='@field("firstName")' required="" />
+              <span class="show-on-error">Fyll i ett förnamn</span>
+            </div>
+          </div>
+
+          <div class='control-group @hasErrors("lastName")'>
+            <label class="control-label" for="lastName">Efternamn</label>
+            <div class="controls">
+              <input type="text" maxlength="127" class="input-xlarge" id="lastName" name="lastName" value='@field("lastName")' required="" />
+              <span class="show-on-error">Fyll i ett efternamn</span>
+            </div>
+          </div>
+
+
+          <div class='control-group @hasErrors("email")'>
+            <label class="control-label" for="email">Epost</label>
+            <div class="controls">
+              <input type="email" maxlength="127" class="input-xlarge" id="email" name="email" value='@field("email")' required="" />
+              <span class="show-on-error">Fyll i en korrekt epostadress</span>
+            </div>
+          </div>
+
+          <div class='control-group @hasErrors("phone")'>
+            <label class="control-label" for="phone">Telefon</label>
+            <div class="controls">
+              <input type="tel" maxlength="127" class="input-xlarge" id="phone" name="phone" value='@field("phone")' />
+              <span class="show-on-error">Ogiltigt telefonnummer</span>
+            </div>
+          </div>
+
+          <div class='control-group @hasErrors("administrator")'>
+            <label class="control-label" for="administrator">Administratör</label>
+            <div class="controls">
+              <input type="checkbox" class="input-xlarge" id="administrator" name="administrator" value="true" @if(userIsAdmin()){checked=""}
+                     onclick='pwdField=document.getElementById("password"); pwdField.disabled=!this.checked; pwdField.required=this.checked' />
+            </div>
+          </div>
+
+          <div class='control-group @hasErrors("password")'>
+            <label class="control-label" for="password">Lösenord</label>
+            <div class="controls">
+              <input type="password" maxlength="127" class="input-xlarge" id="password" name="password" value='@field("password")' @if(userIsAdmin()){required=""} else {disabled=""}/>
+              <span class="show-on-error">Du måste ange ett lösenord</span>
+            </div>
+          </div>
+
+          @if(userForm.hasErrors || userForm.hasGlobalErrors) {
+          <div class="alert alert-error">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <h4 class="alert-heading">Inmatningsfel</h4>
+            <p>@errors(userForm).mkString(", ")</p>
+          </div>
+          }
+
+          <input type="hidden" id="id" name="id" value='@field("id")' />
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="action" name="action" value="save"><i
+                    class="icon-ok icon-white"></i>Spara
+            </button>
+            <button type="button" class="btn" id="cancel" onClick='history.go(-1)'><i
+                    class="icon-ban-circle"></i>Avbryt
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+}

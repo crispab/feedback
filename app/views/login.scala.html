@@ -1,0 +1,59 @@
+@(loginForm: Form[Option[models.User]])(implicit flash: Flash, lang: Lang)
+
+@import util.Section._
+
+@field(fieldName: String) = @{ loginForm(fieldName).value.getOrElse("") }
+
+@hasErrors(fieldName: String) = @{ if(loginForm.hasErrors || loginForm.hasGlobalErrors) { "error" } }
+
+@page(title = "SignUp", section = Login){
+
+@breadcrumb(Seq(), "Logga in")
+
+<div class="row">
+  <div class="span5">
+    @if(flash.get("success").isDefined) {
+      <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @flash.get("success")
+      </div>
+    }
+    @if(flash.get("error").isDefined) {
+      <div class="alert alert-error">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        @flash.get("error")
+      </div>
+    }
+    @if(loginForm.hasErrors || loginForm.hasGlobalErrors) {
+      <div class="alert alert-error">
+        <a class="close" data-dismiss="alert" href="#">×</a>
+        <p>Felaktig epostadress eller lösenord.</p>
+      </div>
+    }
+    <form class="form-horizontal" action="@routes.Application.authenticate()" method="POST">
+
+      <div class='control-group @hasErrors("email")'>
+        <label class="control-label" for="email">Epost</label>
+        <div class="controls">
+          <input type="email" class="input-xlarge" id="email" name="email" value='@field("email")' required="" autofocus=""/>
+        </div>
+      </div>
+
+      <div class='control-group @hasErrors("password")'>
+        <label class="control-label" for="password">Lösenord</label>
+        <div class="controls">
+          <input type="password" id="password" name="password" value='@field("password")' required="" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="btn">Logga in</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+}(loggedInUser = None)
+
+

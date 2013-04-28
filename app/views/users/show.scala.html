@@ -1,0 +1,68 @@
+@(user: models.User)(implicit loggedInUser: Option[User])
+
+@import util.AuthHelper._
+@import util.EmailHelper._
+@import util.GravatarHelper._
+@import util.Section._
+
+@page(user.firstName + " " + user.lastName, section = Users) {
+
+@breadcrumb(Seq("Användare" -> routes.Users.list()),
+            user.firstName + " " + user.lastName)
+
+<div class="row">
+  <div class="span5">
+    <img class="gravatar" src="@gravatarUrl(user.email)"/>
+    <h2>@user.firstName @user.lastName</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="span5">
+    <dl class="dl-horizontal">
+      <dt>Förnamn:</dt>
+      <dd>@user.firstName</dd>
+
+      <dt>Efternamn:</dt>
+      <dd>@user.lastName</dd>
+
+      <dt>Epost:</dt>
+      <dd>@abbreviated(user.email, isLoggedIn(loggedInUser))</dd>
+
+      <dt>Telefon:</dt>
+      <dd>@user.phone</dd>
+    </dl>
+  </div>
+</div>
+
+@if(isAdmin(loggedInUser)) {
+  <div class="row">
+  <div class="span5">
+    <p></p>
+    <a href="@routes.Users.updateForm(user.id.get)" class="btn btn-primary"><i class="icon-pencil icon-white"></i>
+      Redigera</a>
+    <a data-toggle="modal" href="#remove_user_@user.id" class="btn"><i class="icon-trash"></i> Ta bort</a>
+
+    <div id="remove_user_@user.id" class="modal smaller-modal hide fade" style="display: none;">
+      <div class="modal-header">
+        <button class="close transparent" data-dismiss="modal"><i class="icon-remove"></i></button>
+        <h3>Vill du ta bort användaren?</h3>
+      </div>
+      <div class="modal-body">
+        <p>
+          Du håller på att ta bort användaren <strong>@user.firstName @user.lastName</strong>.
+        </p>
+        <p>
+          Vill du fortsätta?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <form action="@routes.Users.delete(user.id.get)" method="POST">
+          <a href="#" class="btn" data-dismiss="modal"><i class="icon-ban-circle"></i> Avbryt</a>
+          <button type="submit" class="btn btn-primary"><i class="icon-trash icon-white"></i> Ta bort</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+}
+}
