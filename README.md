@@ -123,10 +123,9 @@ To be able to deploy to Heroku you must:
 * Install Heroku toolbelt.
 * Do a 'heroku login'.
 * cd into the root of this application
-* git remote add staging git@heroku.com:feedback4.git
-* git push staging master
+* git remote add production git@heroku.com:crisp-feedback.git
+* git push production master
 
-Sometimes you have to do a 'heroku keys:add ~/.ssh/id_rsa.pub' on one of my
-machines as I first got 'Permission denied (publickey).' when trying
-to 'git push heroku master'
+Sometimes you have to do a 'heroku keys:add ~/.ssh/id_rsa.pub' if you get
+'Permission denied (publickey).' when trying to 'git push production master'
 
