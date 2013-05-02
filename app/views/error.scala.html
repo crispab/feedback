@@ -1,0 +1,32 @@
+@(errorCode: Long, errorMessage: String)(implicit loggedInUser: Option[User] = None)
+
+@import util.Section._
+@import play.api.http.Status._
+
+
+@codeToText(code: Long) = @{
+  code match {
+    case NOT_FOUND => code + " sidan finns ej"
+    case FORBIDDEN => code + " behörighet saknas"
+    case _ => code + ""
+  }
+}
+
+
+@page(title = "Feedback", section = Other) {
+
+  @breadcrumb(Seq(), "")
+
+  <div class="row">
+    <div class="span5">
+      <h2>Hoppsan!</h2>
+      <div class="alert alert-error">
+        <a class="close" data-dismiss="alert" href="#">×</a>
+        <h4 class="alert-heading">@codeToText(errorCode)</h4>
+        <p>@errorMessage</p>
+      </div>
+    </div>
+  </div>
+}
+
+

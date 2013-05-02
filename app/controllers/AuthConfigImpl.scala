@@ -8,6 +8,8 @@ import play.api.Logger
 import util.AuthHelper
 import reflect._
 import scala.Predef.ClassManifest
+import play.api.http.Status._
+
 
 trait AuthConfigImpl extends AuthConfig {
 
@@ -67,16 +69,16 @@ trait AuthConfigImpl extends AuthConfig {
   def logoutSucceeded(request: RequestHeader): Result = Redirect(routes.Application.index())
 
   /**
-   * If the user is not logged in and tries to access a protected resource then redirct them as follows:
+   * If the user is not logged in and tries to access a protected resource then redirect them as follows:
    */
   def authenticationFailed(request: RequestHeader): Result = {
-    Redirect(routes.Application.loginForm).withSession(("access_uri" , request.uri)).flashing(("error" , "Nädu, det här får du inte göra utan att logga in som administratör!"))
+    Redirect(routes.Application.loginForm).withSession(("access_uri" , request.uri)).flashing(("error" , "Du behöver vara inloggad för att komma åt denna sida"))
   }
 
   /**
    * If authorization failed (usually incorrect password) redirect the user as follows:
    */
-  def authorizationFailed(request: RequestHeader): Result = Forbidden("Nädu, det här får du inte göra utan att logga in som administratör!")
+  def authorizationFailed(request: RequestHeader): Result = Forbidden(views.html.error(FORBIDDEN, "Du har inte behörighet att se denna sida eller utföra operationen"))
 
   /**
    * A function that determines what `Authority` a user has.

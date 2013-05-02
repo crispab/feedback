@@ -1,0 +1,49 @@
+@(poll: models.Poll)(implicit loggedInUser: Option[User])
+
+@import util.AuthHelper._
+@import util.EmailHelper._
+@import util.GravatarHelper._
+@import util.Section._
+
+@page(poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName, section = Polls) {
+
+  @breadcrumb(Seq("Undersökningar" -> routes.Polls.list()),
+    poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName)
+
+  <div class="row">
+    <div class="span5">
+      <h2>Nöjdhetsundersökning</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span1">
+      <img class="gravatar" src="@gravatarUrl(poll.consultant.email, 70)"/>
+    </div>
+    <div class="span4">
+      <div class="row"><div class="span1"><strong>&nbsp;</strong></div></div>
+      <div class="row"><div class="span1"><strong>
+        Konsult:</strong></div><div class="span3">@poll.consultant.firstName @poll.consultant.lastName</div></div>
+      <div class="row"><div class="span1"><strong>Kund:</strong></div><div class="span3">@poll.customer</div></div>
+      <div class="row"><div class="span1"><strong>Uppdrag:</strong></div><div class="span3">@poll.assignment</div></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span1">
+      <p></p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span5">
+      <p class="well">TODO: Rita en graf...</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span5 btn-row">
+      <a href="@routes.Metrics.createForm(poll.uuid)" class="btn"><i class="icon-plus"></i> Ny dagsnotering</a>
+    </div>
+  </div>
+}

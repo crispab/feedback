@@ -1,21 +1,23 @@
 package controllers
 
 import play.api.mvc._
-import play.api.data.Forms.{mapping, ignored, nonEmptyText, text, optional, longNumber, email, boolean}
+import play.api.data.Forms.{mapping, ignored, nonEmptyText, text, optional, longNumber, boolean}
 import models.User
 import anorm.{Id, Pk, NotAssigned}
 import play.api.data.Form
 import jp.t2v.lab.play2.auth.Auth
-import models.security.{NormalUser, Permission, Administrator}
+import models.security.{NormalUser, Administrator}
 
 object Users extends Controller with Auth with AuthConfigImpl {
 
-  def list = optionalUserAction { implicit user => implicit request =>
+  def list = authorizedAction(NormalUser) { user => implicit request =>
+    implicit val loggedInUser = Option(user)
     val usersToList = User.findAll()
     Ok(views.html.users.list(usersToList))
   }
 
-  def show(id : Long) = optionalUserAction { implicit user => implicit request =>
+  def show(id : Long) = authorizedAction(NormalUser) { user => implicit request =>
+    implicit val loggedInUser = Option(user)
     val userToShow = User.find(id)
     Ok(views.html.users.show(userToShow))
   }

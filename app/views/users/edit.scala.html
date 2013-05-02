@@ -23,18 +23,18 @@
 }
 
 
-@page("Redigera användare" +  field("firstName") + field("lastName"), section = Users) {
+@page("Redigera konsulter" +  field("firstName") + field("lastName"), section = Users) {
 
   @if(updating()) {
-    @breadcrumb(Seq("Användare" -> routes.Users.list(), field("firstName") + " " + field("lastName") -> routes.Users.show(idToUpdate.get)),
+    @breadcrumb(Seq("Konsulter" -> routes.Users.list(), field("firstName") + " " + field("lastName") -> routes.Users.show(idToUpdate.get)),
       "Redigera")
   } else {
-    @breadcrumb(Seq("Användare" -> routes.Users.list()), "Ny")
+    @breadcrumb(Seq("Konsulter" -> routes.Users.list()), "Ny")
   }
 
   <div class="row">
     <div class="span5">
-      <h2>@if(updating()) {Redigera} else {Ny} Användare</h2>
+      <h2>@if(updating()) {Redigera} else {Ny} Konsult</h2>
     </div>
   </div>
 

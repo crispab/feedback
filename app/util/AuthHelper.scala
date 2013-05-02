@@ -18,7 +18,10 @@ object AuthHelper {
   }
 
   def authorize(user: User, permission: Permission): Boolean = {
-    user.permission == permission
+    user.permission match {
+      case Administrator => true
+      case _ => user.permission == permission
+    }
   }
 
   def checkPassword(user : Option[User], enteredPassword: String): Option[User] = {

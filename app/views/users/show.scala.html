@@ -7,7 +7,7 @@
 
 @page(user.firstName + " " + user.lastName, section = Users) {
 
-@breadcrumb(Seq("Användare" -> routes.Users.list()),
+@breadcrumb(Seq("Konsulter" -> routes.Users.list()),
             user.firstName + " " + user.lastName)
 
 <div class="row">
@@ -45,11 +45,11 @@
     <div id="remove_user_@user.id" class="modal smaller-modal hide fade" style="display: none;">
       <div class="modal-header">
         <button class="close transparent" data-dismiss="modal"><i class="icon-remove"></i></button>
-        <h3>Vill du ta bort användaren?</h3>
+        <h3>Vill du ta bort konsulten?</h3>
       </div>
       <div class="modal-body">
         <p>
-          Du håller på att ta bort användaren <strong>@user.firstName @user.lastName</strong>.
+          Du håller på att ta bort konsulten <strong>@user.firstName @user.lastName</strong>.
         </p>
         <p>
           Vill du fortsätta?

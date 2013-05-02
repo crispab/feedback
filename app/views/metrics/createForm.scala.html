@@ -1,0 +1,87 @@
+@(poll: models.Poll)(implicit loggedInUser: Option[User])
+
+@import util.GravatarHelper._
+@import util.Section._
+
+@page(poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName, section = Polls) {
+
+  @breadcrumb(Seq("Undersökningar" -> routes.Polls.list(),
+                  poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName -> routes.Polls.show(poll.uuid)),
+              "Inmatning")
+
+  <div class="row">
+    <div class="span5">
+      <h2>Nöjdhetsundersökning</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span1">
+      <img class="gravatar" src="@gravatarUrl(poll.consultant.email, 70)"/>
+    </div>
+    <div class="span4">
+      <div class="row"><div class="span1"><strong>&nbsp;</strong></div></div>
+      <div class="row"><div class="span1"><strong>
+        Konsult:</strong></div><div class="span3">@poll.consultant.firstName @poll.consultant.lastName</div></div>
+      <div class="row"><div class="span1"><strong>Kund:</strong></div><div class="span3">@poll.customer</div></div>
+      <div class="row"><div class="span1"><strong>Uppdrag:</strong></div><div class="span3">@poll.assignment</div></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span1">
+      <p></p>
+    </div>
+  </div>
+
+  @if(poll.isOpen) {
+    <div class="row">
+      <div class="span5">
+        <form class="well" action="@routes.Metrics.create" method="POST">
+          <fieldset>
+            <legend>Hur nöjd är du med Crisp och @poll.consultant.firstName @poll.consultant.lastName idag?</legend>
+            <label class="radio inline"><input type="radio" name="score" id="score1" value="1">1 &nbsp;</label>
+            <label class="radio inline"><input type="radio" name="score" id="score2" value="2">2 &nbsp;</label>
+            <label class="radio inline"><input type="radio" name="score" id="score3" value="3">3 &nbsp;</label>
+            <label class="radio inline"><input type="radio" name="score" id="score4" value="4">4 &nbsp;</label>
+            <label class="radio inline"><input type="radio" name="score" id="score5" value="5" checked="">5 - supernöjd</label>
+
+            <p>&nbsp;</p>
+
+            <div class='control-group'>
+              <label class="control-label" for="comment">Vad skulle få dig att sätta en högre siffra? (frivilligt)</label>
+              <div class="controls">
+                <textarea maxlength="256" class="span4" id="comment" name="comment" rows="2"></textarea>
+              </div>
+            </div>
+
+            <div class='control-group'>
+              <label class="control-label" for="name">Vad heter du? (frivilligt)</label>
+              <div class="controls">
+                <input type="text" maxlength="127" class="input-xlarge" id="name" name="name">
+              </div>
+            </div>
+
+            <input type="hidden" id="uuid" name="uuid" value="@poll.uuid">
+
+            <button type="submit" class="btn btn-primary" id="action" name="action" value="save">
+              <i class="icon-ok icon-white"></i>Skicka
+            </button>
+            <button type="button" class="btn" id="cancel" onClick='history.go(0)'>
+              <i class="icon-ban-circle"></i>Nollställ
+            </button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  } else {
+    <div class="row">
+      <div class="span5">
+        <div class="alert alert-error">
+          <a class="close" data-dismiss="alert" href="#">×</a>
+          Den här undersökningen är avslutad
+        </div>
+      </div>
+    </div>
+  }
+}

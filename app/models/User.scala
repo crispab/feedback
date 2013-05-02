@@ -32,7 +32,7 @@ object User {
 
   val NOT_CHANGED_PASSWORD = "Y2j1EsDUvc6V" // just a random string
 
-  val parser = {
+  private val parser = {
     get[Pk[Long]]("id") ~
       get[String]("first_name") ~
       get[String]("last_name") ~
