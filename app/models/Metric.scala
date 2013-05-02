@@ -36,10 +36,10 @@ object Metric {
     }
   }
 
-  def findByPoll(pollId: Long): Seq[Metric] = {
+  def findByPoll(poll: Poll): Seq[Metric] = {
     DB.withTransaction {
       implicit connection =>
-        SQL("select * from metrics where poll={pollId} order by whenx").on('pollId -> pollId).as(Metric.parser *)
+        SQL("select * from metrics where poll={pollId} order by whenx").on('pollId -> poll.id.get).as(Metric.parser *)
     }
   }
 

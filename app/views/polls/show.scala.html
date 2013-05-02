@@ -1,7 +1,5 @@
 @(poll: models.Poll)(implicit loggedInUser: Option[User])
 
-@import util.AuthHelper._
-@import util.EmailHelper._
 @import util.GravatarHelper._
 @import util.Section._
 
@@ -37,7 +35,12 @@
 
   <div class="row">
     <div class="span5">
-      <p class="well">TODO: Rita en graf...</p>
+      <p class="well">
+        TODO: Rita en graf... <br/>
+        @Metric.findByPoll(poll).reverse.map { metric =>
+          <strong>@metric.score</strong> @metric.when <br/>
+        }
+      </p>
     </div>
   </div>
 

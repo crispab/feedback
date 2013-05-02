@@ -1,0 +1,40 @@
+@(polls: Seq[Poll])(implicit loggedInUser: Option[User])
+
+@import util.Section._
+@import util.GravatarHelper._
+
+@page("Konsulter", section = Polls) {
+
+  @breadcrumb(Seq(), "Undersökningar")
+
+  <div class="row">
+    <div class="span5">
+      <h2>Undersökningar</h2>
+    </div>
+  </div>
+
+  @polls.map { poll =>
+    <div class="row">
+      <div class="span5 list-row">
+        <div class="row">
+          <div class="span1">
+            <img class="gravatar" src="@gravatarUrl(poll.consultant.email, size = 40)"/>
+          </div>
+          <div class="span3">
+              <strong><a href="@routes.Polls.show(poll.uuid)">
+                @poll.customer: @poll.consultant.firstName @poll.consultant.lastName
+              </a></strong><br/>
+              @poll.assignment
+          </div>
+          <div class="span1">
+          @if(poll.isOpen) {
+            <span class="label label-success">Pågår</span>
+          } else {
+            <span class="label label-important">Avslutad</span>
+          }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+}

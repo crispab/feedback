@@ -60,7 +60,7 @@ object Poll {
   def findAll(): Seq[Poll] = {
     DB.withTransaction {
       implicit connection =>
-        SQL("select * from polls p ORDER BY p.customer, p.assignment").as(Poll.parser *)
+        SQL("select * from polls p ORDER BY p.is_open, p.customer, p.assignment").as(Poll.parser *)
     }
   }
 

@@ -10,7 +10,7 @@ object Polls extends Controller with Auth with AuthConfigImpl {
   def list = authorizedAction(NormalUser) { user => implicit request =>
     implicit val loggedInUser = Option(user)
     val pollsToList = Poll.findAll()
-    NotImplemented
+    Ok(views.html.polls.list(pollsToList))
   }
 
   def show(uuid: String) = optionalUserAction { implicit user => implicit request =>
