@@ -1,5 +1,6 @@
 @(poll: models.Poll)(implicit loggedInUser: Option[User])
 
+@import util.AuthHelper._
 @import util.GravatarHelper._
 @import util.Section._
 
@@ -19,7 +20,11 @@
       <img class="gravatar" src="@gravatarUrl(poll.consultant.email, 70)"/>
     </div>
     <div class="span4">
-      <div class="row"><div class="span1"><strong>&nbsp;</strong></div></div>
+      @if(poll.isOpen) {
+        <div class="row"><div class="span1"><strong>&nbsp;</strong></div></div>
+      } else {
+        <div class="row"><div class="span1"><span class="label label-important">Avslutad</span></div></div>
+      }
       <div class="row"><div class="span1"><strong>
         Konsult:</strong></div><div class="span3">@poll.consultant.firstName @poll.consultant.lastName</div></div>
       <div class="row"><div class="span1"><strong>Kund:</strong></div><div class="span3">@poll.customer</div></div>
@@ -46,7 +51,12 @@
 
   <div class="row">
     <div class="span5 btn-row">
-      <a href="@routes.Metrics.createForm(poll.uuid)" class="btn"><i class="icon-plus"></i> Ny dagsnotering</a>
+      @if(poll.isOpen) {
+        <a href="@routes.Metrics.createForm(poll.uuid)" class="btn btn-primary"><i class="icon-plus icon-white"></i> Rösta</a>
+      }
+      @if(isAdmin(loggedInUser)) {
+        <a href="@routes.Polls.updateForm(poll.uuid)" class="btn"><i class="icon-pencil"></i> Redigera</a>
+      }
     </div>
   </div>
 }

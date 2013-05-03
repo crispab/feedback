@@ -20,6 +20,10 @@ POST    /users/:id/delete           controllers.Users.delete(id: Long)
 # Polls
 GET     /polls                      controllers.Polls.list
 GET     /polls/:uuid                controllers.Polls.show(uuid: String)
+GET     /polls/create/new           controllers.Polls.createForm
+POST    /polls                      controllers.Polls.create
+GET     /polls/:uuid/edit           controllers.Polls.updateForm(uuid: String)
+POST    /polls/:uuid                controllers.Polls.update(uuid: String)
 
 # Metrics
 GET     /metrics/:uuid/new           controllers.Metrics.createForm(uuid: String)

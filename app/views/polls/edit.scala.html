@@ -1,0 +1,117 @@
+@(pollForm: Form[Poll], uuidToUpdate: Option[String] = None, consultants: Seq[User])(implicit loggedInUser: Option[User])
+
+@import util.FormHelper._
+@import util.Section._
+
+  @field(fieldName: String) = @{ pollForm(fieldName).value.getOrElse("") }
+
+  @hasErrors(fieldName: String) = @{ if(pollForm(fieldName).hasErrors) { "error" } }
+
+  @pollIsOpen() = @{field("isOpen") != "false"}
+
+  @creatingNew() = @{
+    uuidToUpdate.isEmpty
+  }
+
+  @theAction() = @{
+    if(creatingNew()) {
+      routes.Polls.create()
+    } else {
+      routes.Polls.update(uuidToUpdate.get)
+    }
+  }
+
+
+@page("Redigera undersökning " + field("customer"), section = Polls) {
+
+  @if(creatingNew()) {
+    @breadcrumb(Seq("Undersökningar" -> routes.Polls.list()), "Ny")
+  } else {
+    @breadcrumb(Seq("Undersökningar" -> routes.Polls.list(), field("customer") -> routes.Polls.show(uuidToUpdate.get)),
+      "Redigera")
+  }
+
+  <div class="row">
+    <div class="span5">
+      <h2>@if(creatingNew()) {Ny} else {Redigera} Undersökning</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span5">
+      <form class="form-horizontal" action="@theAction()" method="POST">
+        <fieldset>
+
+          <div class='control-group @hasErrors("customer")'>
+            <label class="control-label" for="customer">Kund</label>
+            <div class="controls">
+              <input type="text" maxlength="127" class="input-xlarge" id="customer" name="customer" value='@field("customer")' required="" >
+              <span class="show-on-error">Fyll i vem kunden är</span>
+            </div>
+          </div>
+
+          <div class='control-group @hasErrors("contactPerson")'>
+            <label class="control-label" for="contactPerson">Kontaktperson</label>
+            <div class="controls">
+              <input type="text" maxlength="127" class="input-xlarge" id="contactPerson" name="contactPerson" value='@field("contactPerson")' />
+              <span class="show-on-error">Fyll i en kontaktperson</span>
+            </div>
+          </div>
+
+
+          <div class='control-group @hasErrors("assignment")'>
+            <label class="control-label" for="assignment">Uppdrag</label>
+            <div class="controls">
+              <input type="text" maxlength="127" class="input-xlarge" id="assignment" name="assignment" value='@field("assignment")' />
+              <span class="show-on-error">Fyll i en uppdragsbeskrivning</span>
+            </div>
+          </div>
+
+
+          <div class='control-group @hasErrors("consultantId")'>
+            <label class="control-label" for="consultantId">Konsult</label>
+            <div class="controls">
+              <select id="consultantId" name="consultantId" required="">
+                <option>Ingen vald</option>
+                @consultants.map { consultant =>
+                  <option value="@consultant.id.get" @if(consultant.id.get.toString.equals(field("consultantId"))) {selected=""} >
+                    @consultant.firstName @consultant.lastName
+                  </option>
+                }
+              </select>
+              <span class="show-on-error">Välj den konsult som har uppdraget</span>
+            </div>
+          </div>
+
+
+          <div class='control-group @hasErrors("isOpen")'>
+            <label class="control-label" for="isOpen">Pågår</label>
+            <div class="controls">
+              <input type="checkbox" class="input-xlarge" id="isOpen" name="isOpen" value="true" @if(pollIsOpen()){checked=""} />
+            </div>
+          </div>
+
+
+          @if(pollForm.hasErrors || pollForm.hasGlobalErrors) {
+            <div class="alert alert-error">
+              <a class="close" data-dismiss="alert" href="#">×</a>
+              <h4 class="alert-heading">Inmatningsfel</h4>
+              <p>@errors(pollForm).mkString(", ")</p>
+            </div>
+          }
+
+          <input type="hidden" id="uuid" name="uuid" value='@field("uuid")' />
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="action" name="action" value="save"><i
+            class="icon-ok icon-white"></i>Spara
+            </button>
+            <button type="button" class="btn" id="cancel" onClick='history.go(-1)'><i
+            class="icon-ban-circle"></i>Avbryt
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+}

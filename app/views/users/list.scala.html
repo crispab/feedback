@@ -1,4 +1,4 @@
-@(users: Seq[User])(implicit loggedInUser: Option[User])
+@(consultants: Seq[User])(implicit loggedInUser: Option[User])
 
 @import util.Section._
 @import util.AuthHelper._
@@ -7,42 +7,42 @@
 
 @page("Konsulter", section = Users) {
 
-@breadcrumb(Seq(), "Konsulter")
+  @breadcrumb(Seq(), "Konsulter")
 
-<div class="row">
-  <div class="span5">
-    <h2>Konsulter</h2>
-  </div>
-</div>
-
-@users.map { user =>
-<div class="row">
-  <div class="span5 list-row">
-    <div class="row">
-      <div class="span1">
-        <a href="@routes.Users.show(user.id.get)">
-          <img class="gravatar" src="@gravatarUrl(user.email, size=40)"/>
-        </a>
-      </div>
-      <div class="span4">
-        <dl class="listing">
-          <dt><a href="@routes.Users.show(user.id.get)">
-            @user.firstName @user.lastName
-          </a></dt>
-          <dd class="email-address">@abbreviated(user.email, isLoggedIn(loggedInUser))</dd>
-        </dl>
-      </div>
-    </div>
-  </div>
-</div>
-}
-
-@if(isAdmin(loggedInUser)) {
   <div class="row">
-    <div class="span5 btn-row">
-      <a href="@routes.Users.createForm()" class="btn"><i class="icon-plus"></i> Ny konsult</a>
+    <div class="span5">
+      <h2>Konsulter</h2>
     </div>
   </div>
-}
-<div></div>
+
+  @if(isAdmin(loggedInUser)) {
+    <div class="row">
+      <div class="span5 btn-row">
+        <a href="@routes.Users.createForm()" class="btn"><i class="icon-plus"></i> Ny konsult</a>
+      </div>
+    </div>
+  }
+
+  @consultants.map { consultant =>
+    <div class="row">
+      <div class="span5 list-row">
+        <div class="row">
+          <div class="span1">
+            <a href="@routes.Users.show(consultant.id.get)">
+              <img class="gravatar" src="@gravatarUrl(consultant.email, size = 40)"/>
+            </a>
+          </div>
+          <div class="span4">
+            <dl class="listing">
+              <dt><a href="@routes.Users.show(consultant.id.get)">
+                @consultant.firstName @consultant.lastName
+              </a></dt>
+              <dd class="email-address">@abbreviated(consultant.email, isLoggedIn(loggedInUser))</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
 }
