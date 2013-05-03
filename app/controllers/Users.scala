@@ -69,9 +69,8 @@ object Users extends Controller with Auth with AuthConfigImpl {
       "email" -> play.api.data.Forms.email.verifying("Epostadressen används av någon annan", User.findByEmail(_).isEmpty),
       "phone" -> text(maxLength = 127),
       "administrator" -> boolean,
-      "password" -> optional(text(maxLength = 127))
+      "password" -> nonEmptyText(minLength = 8, maxLength = 127)
     )(toUser)(fromUser)
-      .verifying("Administratörer måste ha ett lösenord på minst 8 tecken", user => user.password.length >= 8)
   )
 
   val primaryKey = optional(longNumber).transform(
@@ -93,30 +92,23 @@ object Users extends Controller with Auth with AuthConfigImpl {
       "email" -> play.api.data.Forms.email,
       "phone" -> text(maxLength = 127),
       "administrator" -> boolean,
-      "password" -> optional(text(maxLength = 127))
+      "password" -> nonEmptyText(minLength = 8, maxLength = 127)
     )(toUser)(fromUser)
       .verifying("Epostadressen används av någon annan", user => User.verifyUniqueEmail(user))
-      .verifying("Administratörer måste ha ett lösenord på minst 8 tecken", user => user.password.length >= 8)
   )
 
-  def toUser(id: Pk[Long], firstName: String, lastName: String, email: String, phone: String, isAdministrator: Boolean, password: Option[String]): User = {
+
+  def toUser(id: Pk[Long], firstName: String, lastName: String, email: String, phone: String, isAdministrator: Boolean, password: String): User = {
     val permission = isAdministrator match {
       case true => Administrator
       case _ => NormalUser
     }
-    val passwordToSet = permission match {
-      case Administrator => password.getOrElse("").trim
-      case _ => User.NOT_CHANGED_PASSWORD
-    }
+    val passwordToSet = password.trim
     User(id=id, firstName=firstName, lastName=lastName, email=email, phone=phone, permission=permission, password=passwordToSet)
   }
 
   def fromUser(user: models.User) = {
-    val passwordToShow: Option[String]  = user.permission match {
-      case Administrator => Option(User.NOT_CHANGED_PASSWORD)
-      case _ => None
-    }
-    Option(user.id, user.firstName, user.lastName, user.email, user.phone, user.permission==Administrator, passwordToShow)
+    Option(user.id, user.firstName, user.lastName, user.email, user.phone, user.permission==Administrator, User.NOT_CHANGED_PASSWORD)
   }
 }
 
