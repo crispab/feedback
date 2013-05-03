@@ -26,7 +26,6 @@ GET     /polls/:uuid/edit           controllers.Polls.updateForm(uuid: String)
 POST    /polls/:uuid                controllers.Polls.update(uuid: String)
 
 # Metrics
-GET     /metrics/:uuid/new           controllers.Metrics.createForm(uuid: String)
 GET     /metrics/:uuid               controllers.Metrics.createForm(uuid: String)
 POST    /metrics                     controllers.Metrics.create
 
