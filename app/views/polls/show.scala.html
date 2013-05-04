@@ -52,7 +52,7 @@
   <div class="row">
     <div class="span5 btn-row">
       @if(poll.isOpen) {
-        <a href="@routes.Metrics.createForm(poll.uuid)" class="btn btn-primary"><i class="icon-plus icon-white"></i> Rösta</a>
+        <a href="@routes.Metrics.createForm(poll.uuid)" class="btn btn-primary"><i class="icon-plus icon-white"></i> Sätt betyg</a>
       }
       @if(isAdmin(loggedInUser)) {
         <a href="@routes.Polls.updateForm(poll.uuid)" class="btn"><i class="icon-pencil"></i> Redigera</a>

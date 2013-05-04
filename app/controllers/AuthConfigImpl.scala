@@ -7,8 +7,8 @@ import play.api.mvc.Results._
 import play.api.Logger
 import util.AuthHelper
 import reflect._
-import scala.Predef.ClassManifest
 import play.api.http.Status._
+import java.net.URI
 
 
 trait AuthConfigImpl extends AuthConfig {
@@ -58,7 +58,12 @@ trait AuthConfigImpl extends AuthConfig {
    * Where to redirect the user after a successful login.
    */
   def loginSucceeded(request: RequestHeader): Result = {
-    val uri = request.session.get("access_uri").getOrElse(routes.Application.index.url.toString)
+    val indexUri = routes.Application.index.url
+    var uri = request.session.get("access_uri").getOrElse(indexUri)
+    uri = new URI(uri).getPath
+    if(uri.equals(indexUri)){
+      uri = routes.Polls.list.url
+    }
     Logger.debug("Login succeeded. Redirecting to uri " + uri)
     Redirect(uri).withSession(request.session - "access_uri")
   }
