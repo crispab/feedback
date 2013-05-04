@@ -12,15 +12,18 @@ object Metrics extends Controller with Auth with AuthConfigImpl {
   def createForm(uuid: String) = optionalUserAction { implicit user => implicit request =>
     try {
       val forPoll = Poll.findByUuid(uuid)
-      Ok(views.html.metrics.createForm(forPoll))
+      Ok(views.html.metrics.create(metricForm, forPoll))
     } catch {
       case e: Exception => NotFound(views.html.error(NOT_FOUND, "Kan inte hitta undersökning med id '" + uuid + "'"))
     }
   }
 
-  def create = optionalUserAction { implicit user => implicit request =>
+  def create(uuid: String) = optionalUserAction { implicit user => implicit request =>
     metricForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(views.html.error(BAD_REQUEST, "Fel i inmatningen")),
+      formWithErrors => {
+        val forPoll = Poll.findByUuid(uuid)
+        BadRequest(views.html.metrics.create(formWithErrors, forPoll))
+      },
       metric => {
         Metric.create(metric)
         Redirect(routes.Polls.show(metric.poll.uuid))

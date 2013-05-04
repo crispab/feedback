@@ -10,24 +10,24 @@ GET     /logout                     controllers.Application.logout
 
 # Users
 GET     /users/new                  controllers.Users.createForm
-GET     /users/:id/edit             controllers.Users.updateForm(id: Long)
 POST    /users                      controllers.Users.create
-GET     /users                      controllers.Users.list
-GET     /users/:id                  controllers.Users.show(id: Long)
+GET     /users/:id/edit             controllers.Users.updateForm(id: Long)
 POST    /users/:id                  controllers.Users.update(id: Long)
 POST    /users/:id/delete           controllers.Users.delete(id: Long)
+GET     /users                      controllers.Users.list
+GET     /users/:id                  controllers.Users.show(id: Long)
 
 # Polls
-GET     /polls                      controllers.Polls.list
-GET     /polls/:uuid                controllers.Polls.show(uuid: String)
-GET     /polls/create/new           controllers.Polls.createForm
+GET     /polls/new                  controllers.Polls.createForm
 POST    /polls                      controllers.Polls.create
 GET     /polls/:uuid/edit           controllers.Polls.updateForm(uuid: String)
 POST    /polls/:uuid                controllers.Polls.update(uuid: String)
+GET     /polls                      controllers.Polls.list
+GET     /polls/:uuid                controllers.Polls.show(uuid: String)
 
 # Metrics
 GET     /metrics/:uuid               controllers.Metrics.createForm(uuid: String)
-POST    /metrics                     controllers.Metrics.create
+POST    /metrics/:uuid               controllers.Metrics.create(uuid: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
