@@ -23,6 +23,7 @@ This is a happiness index tool for our customers to use for giving us feedback o
 
  - Twitter Bootstrap 2.2.1 - http://twitter.github.com/bootstrap
  - jQuery 1.9.0 (used by Twitter Bootstrap) - http://jquery.com
+ - Flotr2 2013-03-22 - http://www.humblesoftware.com/flotr2
 
 ### Services ###
  - Play2.x module for Authentication and Authorization 0.9 - http://github.com/t2v/play20-auth

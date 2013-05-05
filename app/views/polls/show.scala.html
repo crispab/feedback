@@ -1,4 +1,4 @@
-@(poll: models.Poll)(implicit loggedInUser: Option[User])
+@(poll: models.Poll, metrics: Seq[Metric])(implicit loggedInUser: Option[User])
 
 @import util.AuthHelper._
 @import util.GravatarHelper._
@@ -21,7 +21,7 @@
     </div>
     <div class="span4">
       @if(poll.isOpen) {
-        <div class="row"><div class="span1"><strong>&nbsp;</strong></div></div>
+        <div class="row"><div class="span1">&nbsp;</div></div>
       } else {
         <div class="row"><div class="span1"><span class="label label-important">Avslutad</span></div></div>
       }
@@ -38,16 +38,86 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="span5">
-      <p class="well">
-        TODO: Rita en graf... <br/>
-        @Metric.findByPoll(poll).reverse.map { metric =>
-          <strong>@metric.score</strong> @metric.when <br/>
-        }
-      </p>
+  @if(metrics.size > 0) {
+
+    <div class="row">
+      <div class="span5">
+        <div class="well graph-background">
+          <div class="graph" id="graph">
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <script type="text/javascript">
+      (function score_graph(container) {
+
+        var
+          scores    = [@metrics.map { metric => [@metric.when.getTime , @metric.score], }],
+          options,
+          graph,
+          o;
+
+
+        options = {
+          xaxis : {
+            mode : 'time',
+            timeMode: 'local',
+            labelsAngle : 45
+          },
+          yaxis : {
+            ticks : [1, 2, 3, 4, 5],
+            min: 0.8,
+            max: 5.2
+          },
+          selection : {
+            mode : 'x'
+          },
+          grid: {
+            backgroundColor: '#FFFFFF'
+          },
+          HtmlText : false,
+          title : 'Nöjdhetsindex'
+        };
+
+        // Draw graph with default options, overwriting with passed options
+        function drawGraph (opts) {
+
+          // Clone the options, so the 'options' variable always keeps intact.
+          o = Flotr._.extend(Flotr._.clone(options), opts || {});
+
+          // Return a new graph.
+          return Flotr.draw(
+            container,
+            [ { data : scores, lines : { show : true }, points : { show : true } } ],
+            o
+          );
+        }
+
+        graph = drawGraph();
+
+        Flotr.EventAdapter.observe(container, 'flotr:select', function(area){
+          // Draw selected area
+          graph = drawGraph({
+            xaxis : { min : area.x1, max : area.x2, mode : 'time', timeMode: 'local', labelsAngle : 45 },
+            yaxis : { ticks : [1, 2, 3, 4, 5], min : 0.8, max : 5.2 }
+          });
+        });
+
+        // When graph is clicked, draw the graph with default area.
+        Flotr.EventAdapter.observe(container, 'flotr:click', function () { graph = drawGraph(); });
+      })(document.getElementById("graph"));
+    </script>
+
+  } else {
+
+    <div class="row">
+      <div class="span5">
+        <p class="well">Inga data än så länge</p>
+      </div>
+    </div>
+
+  }
 
   <div class="row">
     <div class="span5 btn-row">

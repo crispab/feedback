@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc._
-import models.{User, Poll}
+import models.{Metric, User, Poll}
 import jp.t2v.lab.play2.auth.Auth
 import models.security.{Administrator, NormalUser}
 import play.api.data.Form
@@ -19,7 +19,8 @@ object Polls extends Controller with Auth with AuthConfigImpl {
   def show(uuid: String) = optionalUserAction { implicit user => implicit request =>
     try {
       val pollToShow = Poll.findByUuid(uuid)
-      Ok(views.html.polls.show(pollToShow))
+      val metrics = Metric.findByPoll(pollToShow)
+      Ok(views.html.polls.show(pollToShow, metrics))
     } catch {
       case e: Exception => NotFound(views.html.error(NOT_FOUND, "Kan inte hitta undersökning med id '" + uuid + "'"))
     }
