@@ -57,6 +57,13 @@ object Poll {
     }
   }
 
+  def findByConsultant(consultant: User): Seq[Poll] = {
+    DB.withTransaction {
+      implicit connection =>
+        SQL("SELECT * FROM polls p WHERE p.consultant={consultant} ORDER BY p.is_open DESC, p.customer, p.assignment").on('consultant -> consultant.id.get).as(Poll.parser *)
+    }
+  }
+
   def findAll(): Seq[Poll] = {
     DB.withTransaction {
       implicit connection =>

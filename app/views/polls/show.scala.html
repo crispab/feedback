@@ -17,7 +17,11 @@
 
   <div class="row">
     <div class="span1">
-      <img class="gravatar" src="@gravatarUrl(poll.consultant.email, 70)"/>
+      @if(isLoggedIn(loggedInUser)) {
+        <a href="@routes.Users.show(poll.consultant.id.get)"><img class="gravatar" src="@gravatarUrl(poll.consultant.email, 70)"/></a>
+      } else {
+        <img class="gravatar" src="@gravatarUrl(poll.consultant.email, 70)"/>
+      }
     </div>
     <div class="span4">
       @if(poll.isOpen) {
@@ -25,8 +29,11 @@
       } else {
         <div class="row"><div class="span1"><span class="label label-important">Avslutad</span></div></div>
       }
-      <div class="row"><div class="span1"><strong>
-        Konsult:</strong></div><div class="span3">@poll.consultant.firstName @poll.consultant.lastName</div></div>
+      @if(isLoggedIn(loggedInUser)) {
+        <div class="row"><div class="span1"><strong>Konsult:</strong></div><div class="span3"><a href="@routes.Users.show(poll.consultant.id.get)">@poll.consultant.firstName @poll.consultant.lastName</a></div></div>
+      } else {
+        <div class="row"><div class="span1"><strong>Konsult:</strong></div><div class="span3">@poll.consultant.firstName @poll.consultant.lastName</div></div>
+      }
       <div class="row"><div class="span1"><strong>Kund:</strong></div><div class="span3">@poll.customer</div></div>
       <div class="row"><div class="span1"><strong>Uppdrag:</strong></div><div class="span3">@poll.assignment</div></div>
     </div>
