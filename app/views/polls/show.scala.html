@@ -57,14 +57,23 @@
     </div>
 
     <script type="text/javascript">
-      (function score_graph(container) {
+      (function metrics_graph(container) {
 
         var
-          scores    = [@metrics.map { metric => [@metric.when.getTime , @metric.score], }],
+          points    = [@metrics.map { metric => [@metric.when.getTime , @metric.score], }],
+          comments  = [@metrics.map { metric => "@metric.comment", }],
           options,
           graph,
           o;
 
+
+        function tooltip(point) {
+          var
+            x = point.x,
+            y = point.y;
+
+          return 'Betyg: ' + y + '<br/>' + comments[point.index];
+        }
 
         options = {
           xaxis : {
@@ -83,9 +92,18 @@
           grid: {
             backgroundColor: '#FFFFFF'
           },
+          mouse : {
+            track : true,
+            relative : true,
+            trackDecimals:0,
+            sensibility: 4,
+            radius: 6,
+            trackFormatter: tooltip
+          },
           HtmlText : false,
           title : 'Nöjdhetsindex'
         };
+
 
         // Draw graph with default options, overwriting with passed options
         function drawGraph (opts) {
@@ -96,7 +114,7 @@
           // Return a new graph.
           return Flotr.draw(
             container,
-            [ { data : scores, lines : { show : true }, points : { show : true } } ],
+            [ { data : points, lines : { show : true }, points : { show : true } } ],
             o
           );
         }
