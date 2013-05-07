@@ -61,7 +61,8 @@
 
         var
           points    = [@metrics.map { metric => [@metric.when.getTime , @metric.score], }],
-          comments  = [@metrics.map { metric => "@metric.comment", }],
+          comments  = [@metrics.map { metric => @if(metric.comment.length > 0) {"<br/>@metric.comment"} else {""}, }],
+          names  = [@metrics.map { metric => @if(metric.name.length > 0) {"<br/>/@metric.name"} else {""}, }],
           options,
           graph,
           o;
@@ -72,7 +73,7 @@
             x = point.x,
             y = point.y;
 
-          return 'Betyg: ' + y + '<br/>' + comments[point.index];
+          return 'Betyg: ' + y  + comments[point.index] + names[point.index];
         }
 
         options = {

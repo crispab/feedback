@@ -37,7 +37,8 @@ object Metrics extends Controller with Auth with AuthConfigImpl {
         "id" -> ignored(NotAssigned:Pk[Long]),
         "uuid" -> nonEmptyText,
         "score" -> longNumber,
-        "comment" -> text(maxLength = 256)
+        "comment" -> text(maxLength = 256),
+        "name" -> text(maxLength = 127)
       )(toMetric)(fromMetric)
     )
 
@@ -45,17 +46,19 @@ object Metrics extends Controller with Auth with AuthConfigImpl {
                        id: Pk[Long],
                        uuid: String,
                        score: Long,
-                       comment: String): Metric = {
+                       comment: String,
+                       name: String): Metric = {
     Metric(
       id = id,
       poll = Poll.findByUuid(uuid),
       score = score,
-      comment = comment
+      comment = comment,
+      name = name
     )
   }
 
   private def fromMetric(metric: Metric) = {
-    Option((metric.id, metric.poll.uuid, metric.score, metric.comment))
+    Option((metric.id, metric.poll.uuid, metric.score, metric.comment, metric.name))
   }
 
 }

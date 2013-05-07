@@ -12,7 +12,8 @@ case class Metric(id: Pk[Long] = NotAssigned,
                   when: Date = new Date(),
                   poll: Poll,
                   score: Long,
-                  comment: String)
+                  comment: String,
+                  name: String)
 
 
 object Metric {
@@ -24,14 +25,16 @@ object Metric {
       get[Date]("whenx") ~
       get[Long]("poll") ~
       get[Long]("score") ~
-      get[String]("comment") map {
-      case id ~ whenx ~ poll ~ score ~ comment =>
+      get[String]("comment") ~
+      get[String]("name") map {
+      case id ~ whenx ~ poll ~ score ~ comment ~ name =>
         Metric(
           id = id,
           when = whenx,
           poll = Poll.find(poll),
           score = score,
-          comment = comment
+          comment = comment,
+          name = name
         )
     }
   }
@@ -50,7 +53,8 @@ object Metric {
           'whenx -> metric.when,
           'poll -> metric.poll.id,
           'score -> metric.score,
-          'comment -> metric.comment
+          'comment -> metric.comment,
+          'name -> metric.name
         ).executeInsert()
     } match {
       case Some(primaryKey: Long) => primaryKey
@@ -64,13 +68,15 @@ INSERT INTO metrics (
       whenx,
       poll,
       score,
-      comment
+      comment,
+      name
     )
     VALUES (
       {whenx},
       {poll},
       {score},
-      {comment}
+      {comment},
+      {name}
     )
     """
 }
