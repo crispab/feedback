@@ -62,7 +62,7 @@ trait AuthConfigImpl extends AuthConfig {
     var uri = request.session.get("access_uri").getOrElse(indexUri)
     uri = new URI(uri).getPath
     if(uri.equals(indexUri)){
-      uri = routes.Polls.list.url
+      uri = routes.PollsSecured.list.url
     }
     Logger.debug("Login succeeded. Redirecting to uri " + uri)
     Redirect(uri).withSession(request.session - "access_uri")

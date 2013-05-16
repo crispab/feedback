@@ -6,7 +6,7 @@
 
 @page(poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName, section = Polls) {
 
-  @breadcrumb(Seq("Undersökningar" -> routes.Polls.list()),
+  @breadcrumb(Seq("Undersökningar" -> routes.PollsSecured.list()),
     poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName)
 
   <div class="row">
@@ -151,7 +151,7 @@
         <a href="@routes.Metrics.createForm(poll.uuid)" class="btn btn-primary"><i class="icon-plus icon-white"></i> Sätt betyg</a>
       }
       @if(isAdmin(loggedInUser)) {
-        <a href="@routes.Polls.updateForm(poll.uuid)" class="btn"><i class="icon-pencil"></i> Redigera</a>
+        <a href="@routes.PollsSecured.updateForm(poll.uuid)" class="btn"><i class="icon-pencil"></i> Redigera</a>
       }
     </div>
   </div>

@@ -15,9 +15,9 @@
 
   @theAction() = @{
     if(creatingNew()) {
-      routes.Polls.create()
+      routes.PollsSecured.create()
     } else {
-      routes.Polls.update(uuidToUpdate.get)
+      routes.PollsSecured.update(uuidToUpdate.get)
     }
   }
 
@@ -25,9 +25,9 @@
 @page("Redigera undersökning " + field("customer"), section = Polls) {
 
   @if(creatingNew()) {
-    @breadcrumb(Seq("Undersökningar" -> routes.Polls.list()), "Ny")
+    @breadcrumb(Seq("Undersökningar" -> routes.PollsSecured.list()), "Ny")
   } else {
-    @breadcrumb(Seq("Undersökningar" -> routes.Polls.list(), field("customer") -> routes.Polls.show(uuidToUpdate.get)),
+    @breadcrumb(Seq("Undersökningar" -> routes.PollsSecured.list(), field("customer") -> routes.Polls.show(uuidToUpdate.get)),
       "Redigera")
   }
 

@@ -15,7 +15,7 @@
 
 @page(poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName, section = Polls) {
 
-  @breadcrumb(Seq("Undersökningar" -> routes.Polls.list(),
+  @breadcrumb(Seq("Undersökningar" -> routes.PollsSecured.list(),
     poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName -> routes.Polls.show(poll.uuid)),
     "Inmatning")
 

@@ -5,36 +5,36 @@ import play.api.data.Forms.{mapping, ignored, nonEmptyText, text, optional, long
 import models.User
 import anorm.{Id, Pk, NotAssigned}
 import play.api.data.Form
-import jp.t2v.lab.play2.auth.Auth
+import jp.t2v.lab.play2.auth.AuthElement
 import models.security.{NormalUser, Administrator}
 
-object Users extends Controller with Auth with AuthConfigImpl {
+object Users extends Controller with AuthElement with AuthConfigImpl {
 
-  def list = authorizedAction(NormalUser) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     val usersToList = User.findAll()
     Ok(views.html.users.list(usersToList))
   }
 
-  def show(id : Long) = authorizedAction(NormalUser) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def show(id : Long) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     val userToShow = User.find(id)
     Ok(views.html.users.show(userToShow))
   }
 
-  def createForm = authorizedAction(Administrator) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def createForm = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     Ok(views.html.users.edit(userCreateForm))
   }
 
-  def updateForm(id: Long) = authorizedAction(Administrator) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def updateForm(id: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     val userToUpdate = User.find(id)
     Ok(views.html.users.edit(userUpdateForm.fill(userToUpdate), idToUpdate = Option(id)))
   }
 
-  def create = authorizedAction(Administrator) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
       userCreateForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.users.edit(formWithErrors)),
         user => {
@@ -44,8 +44,8 @@ object Users extends Controller with Auth with AuthConfigImpl {
       )
   }
 
-  def update(id: Long) = authorizedAction(Administrator) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def update(id: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     val whatever = userUpdateForm.bindFromRequest
     whatever.fold(
         formWithErrors => BadRequest(views.html.users.edit(formWithErrors, Option(id))),
@@ -56,7 +56,7 @@ object Users extends Controller with Auth with AuthConfigImpl {
       )
   }
 
-  def delete(id: Long) = authorizedAction(Administrator) { user => implicit request =>
+  def delete(id: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
     User.delete(id)
     Redirect(routes.Users.list())
   }
@@ -73,7 +73,7 @@ object Users extends Controller with Auth with AuthConfigImpl {
     )(toUser)(fromUser)
   )
 
-  val primaryKey = optional(longNumber).transform(
+  private val primaryKey = optional(longNumber).transform(
     (optionLong: Option[Long]) =>
       if (optionLong.isDefined) {
         Id(optionLong.get)
@@ -84,7 +84,7 @@ object Users extends Controller with Auth with AuthConfigImpl {
       pkLong.toOption)
 
 
-  val userUpdateForm: Form[User] = Form(
+  private val userUpdateForm: Form[User] = Form(
     mapping(
       "id" -> primaryKey,
       "firstName" -> nonEmptyText(maxLength = 127),
@@ -98,7 +98,7 @@ object Users extends Controller with Auth with AuthConfigImpl {
   )
 
 
-  def toUser(id: Pk[Long], firstName: String, lastName: String, email: String, phone: String, isAdministrator: Boolean, password: String): User = {
+  private def toUser(id: Pk[Long], firstName: String, lastName: String, email: String, phone: String, isAdministrator: Boolean, password: String): User = {
     val permission = isAdministrator match {
       case true => Administrator
       case _ => NormalUser
@@ -107,7 +107,7 @@ object Users extends Controller with Auth with AuthConfigImpl {
     User(id=id, firstName=firstName, lastName=lastName, email=email, phone=phone, permission=permission, password=passwordToSet)
   }
 
-  def fromUser(user: models.User) = {
+  private def fromUser(user: models.User) = {
     Option(user.id, user.firstName, user.lastName, user.email, user.phone, user.permission==Administrator, User.NOT_CHANGED_PASSWORD)
   }
 }

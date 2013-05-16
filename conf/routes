@@ -18,11 +18,11 @@ GET     /users                      controllers.Users.list
 GET     /users/:id                  controllers.Users.show(id: Long)
 
 # Polls
-GET     /polls/new                  controllers.Polls.createForm
-POST    /polls                      controllers.Polls.create
-GET     /polls/:uuid/edit           controllers.Polls.updateForm(uuid: String)
-POST    /polls/:uuid                controllers.Polls.update(uuid: String)
-GET     /polls                      controllers.Polls.list
+GET     /polls/new                  controllers.PollsSecured.createForm
+POST    /polls                      controllers.PollsSecured.create
+GET     /polls/:uuid/edit           controllers.PollsSecured.updateForm(uuid: String)
+POST    /polls/:uuid                controllers.PollsSecured.update(uuid: String)
+GET     /polls                      controllers.PollsSecured.list
 GET     /polls/:uuid                controllers.Polls.show(uuid: String)
 
 # Metrics

@@ -3,18 +3,35 @@ package util
 import models.User
 import models.security.{Permission, Administrator}
 import java.security.MessageDigest
+import anorm.Pk
 
 object AuthHelper {
-  def isAdmin(user: Option[User]):Boolean = {
-    if (user.isDefined) {
-      authorize(user.get, Administrator)
+  def isAdmin(loggedInUser: Option[User]):Boolean = {
+    if (loggedInUser.isDefined) {
+      authorize(loggedInUser.get, Administrator)
     } else {
       false
     }
   }
 
-  def isLoggedIn(user: Option[User]): Boolean = {
-    user.isDefined
+  def isSameOrAdmin(loggedInUser: Option[User], userId: Pk[Long]): Boolean = {
+    if (loggedInUser.isDefined) {
+      (loggedInUser.get.id == userId) || authorize(loggedInUser.get, Administrator)
+    } else {
+      false
+    }
+  }
+
+  def isSameOrAdmin(loggedInUser: Option[User], user: User): Boolean = {
+    if (loggedInUser.isDefined) {
+      (loggedInUser.get.id == user.id) || authorize(loggedInUser.get, Administrator)
+    } else {
+      false
+    }
+  }
+
+  def isLoggedIn(loggedInUser: Option[User]): Boolean = {
+    loggedInUser.isDefined
   }
 
   def authorize(user: User, permission: Permission): Boolean = {

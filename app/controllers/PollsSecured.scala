@@ -2,21 +2,22 @@ package controllers
 
 import play.api.mvc._
 import models.{Metric, User, Poll}
-import jp.t2v.lab.play2.auth.Auth
+import jp.t2v.lab.play2.auth.{OptionalAuthElement, AuthElement}
 import models.security.{Administrator, NormalUser}
 import play.api.data.Form
 import play.api.data.Forms._
 import anorm.{Pk, NotAssigned}
 
-object Polls extends Controller with Auth with AuthConfigImpl {
+object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
 
-  def list = authorizedAction(NormalUser) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     val pollsToList = Poll.findAll()
     Ok(views.html.polls.list(pollsToList))
   }
 
-  def show(uuid: String) = optionalUserAction { implicit user => implicit request =>
+  def show(uuid: String) = StackAction { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     try {
       val pollToShow = Poll.findByUuid(uuid)
       val metrics = Metric.findByPoll(pollToShow)
@@ -26,14 +27,14 @@ object Polls extends Controller with Auth with AuthConfigImpl {
     }
   }
 
-  def createForm = authorizedAction(Administrator) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def createForm = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     val consultants = User.findAll()
     Ok(views.html.polls.edit(pollForm, consultants = consultants))
   }
 
-  def create = authorizedAction(Administrator) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     pollForm.bindFromRequest.fold(
       formWithErrors => {
         val consultants = User.findAll()
@@ -41,20 +42,20 @@ object Polls extends Controller with Auth with AuthConfigImpl {
       },
       poll => {
         Poll.create(poll)
-        Redirect(routes.Polls.list())
+        Redirect(routes.PollsSecured.list())
       }
     )
   }
 
-  def updateForm(uuid: String) = authorizedAction(Administrator) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def updateForm(uuid: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     val pollToUpdate = Poll.findByUuid(uuid)
     val consultants = User.findAll()
     Ok(views.html.polls.edit(pollForm.fill(pollToUpdate), uuidToUpdate = Option(uuid), consultants = consultants))
   }
 
-  def update(uuid: String) = authorizedAction(Administrator) { user => implicit request =>
-    implicit val loggedInUser = Option(user)
+  def update(uuid: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     pollForm.bindFromRequest.fold(
       formWithErrors => {
         val consultants = User.findAll()
@@ -94,5 +95,19 @@ object Polls extends Controller with Auth with AuthConfigImpl {
     Option((poll.id, poll.uuid, poll.customer, Option(poll.contactPerson), Option(poll.assignment), poll.consultant.id.get, poll.isOpen))
   }
 
+}
+
+object Polls extends Controller with OptionalAuthElement with AuthConfigImpl {
+
+  def show(uuid: String) = StackAction { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
+    try {
+      val pollToShow = Poll.findByUuid(uuid)
+      val metrics = Metric.findByPoll(pollToShow)
+      Ok(views.html.polls.show(pollToShow, metrics))
+    } catch {
+      case e: Exception => NotFound(views.html.error(NOT_FOUND, "Kan inte hitta undersökning med id '" + uuid + "'"))
+    }
+  }
 }
 

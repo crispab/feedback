@@ -5,11 +5,12 @@ import play.api.data.Form
 import play.api.data.Forms._
 import anorm.{Pk, NotAssigned}
 import play.api.mvc._
-import jp.t2v.lab.play2.auth.Auth
+import jp.t2v.lab.play2.auth.OptionalAuthElement
 
-object Metrics extends Controller with Auth with AuthConfigImpl {
+object Metrics extends Controller with OptionalAuthElement with AuthConfigImpl {
 
-  def createForm(uuid: String) = optionalUserAction { implicit user => implicit request =>
+  def createForm(uuid: String) = StackAction { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     try {
       val forPoll = Poll.findByUuid(uuid)
       Ok(views.html.metrics.create(metricForm, forPoll))
@@ -18,7 +19,8 @@ object Metrics extends Controller with Auth with AuthConfigImpl {
     }
   }
 
-  def create(uuid: String) = optionalUserAction { implicit user => implicit request =>
+  def create(uuid: String) = StackAction { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
     metricForm.bindFromRequest.fold(
       formWithErrors => {
         val forPoll = Poll.findByUuid(uuid)
