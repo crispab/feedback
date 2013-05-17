@@ -8,13 +8,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import anorm.{Pk, NotAssigned}
 
-object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
-
-  def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
-    implicit val loggedInUser = Option(loggedIn)
-    val pollsToList = Poll.findAll()
-    Ok(views.html.polls.list(pollsToList))
-  }
+object Polls extends Controller with OptionalAuthElement with AuthConfigImpl {
 
   def show(uuid: String) = StackAction { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
@@ -25,6 +19,17 @@ object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
     } catch {
       case e: Exception => NotFound(views.html.error(NOT_FOUND, "Kan inte hitta undersökning med id '" + uuid + "'"))
     }
+  }
+}
+
+
+
+object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
+
+  def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
+    val pollsToList = Poll.findAll()
+    Ok(views.html.polls.list(pollsToList))
   }
 
   def createForm = StackAction(AuthorityKey -> Administrator) { implicit request =>
@@ -97,17 +102,4 @@ object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
 
 }
 
-object Polls extends Controller with OptionalAuthElement with AuthConfigImpl {
-
-  def show(uuid: String) = StackAction { implicit request =>
-    implicit val loggedInUser = Option(loggedIn)
-    try {
-      val pollToShow = Poll.findByUuid(uuid)
-      val metrics = Metric.findByPoll(pollToShow)
-      Ok(views.html.polls.show(pollToShow, metrics))
-    } catch {
-      case e: Exception => NotFound(views.html.error(NOT_FOUND, "Kan inte hitta undersökning med id '" + uuid + "'"))
-    }
-  }
-}
 
