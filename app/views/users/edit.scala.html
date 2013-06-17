@@ -1,5 +1,6 @@
 @(userForm: Form[User], idToUpdate: Option[Long] = None)(implicit loggedInUser: Option[User])
 
+@import util.AuthHelper._
 @import util.FormHelper._
 @import util.Section._
 
@@ -79,7 +80,7 @@
           <div class='control-group @hasErrors("administrator")'>
             <label class="control-label" for="administrator">Administratör</label>
             <div class="controls">
-              <input type="checkbox" class="input-xlarge" id="administrator" name="administrator" value="true" @if(userIsAdmin()){checked=""} />
+              <input type="checkbox" class="input-xlarge" id="administrator" name="administrator" value="true" @if(userIsAdmin()){checked=""} @if(!isAdmin(loggedInUser)){disabled=""}/>
             </div>
           </div>
 

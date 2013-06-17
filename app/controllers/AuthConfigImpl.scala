@@ -1,11 +1,9 @@
 package controllers
 
 import jp.t2v.lab.play2.auth.AuthConfig
-import models.security.Permission
 import play.api.mvc._
 import play.api.mvc.Results._
 import play.api.Logger
-import util.AuthHelper
 import reflect._
 import play.api.http.Status._
 import java.net.URI
@@ -22,16 +20,6 @@ trait AuthConfigImpl extends AuthConfig {
    * A type that represents a user in your application.
    */
   type User = models.User
-
-  /**
-   * A type that is defined by every action for authorization.
-   * This sample uses the following trait:
-   *
-   * sealed trait Permission
-   * case object Administrator extends Permission
-   * case object NormalUser extends Permission
-   */
-  type Authority = Permission
 
   /**
    * A `ClassManifest` is used to retrieve an id from the Cache API.
@@ -58,10 +46,9 @@ trait AuthConfigImpl extends AuthConfig {
    * Where to redirect the user after a successful login.
    */
   def loginSucceeded(request: RequestHeader): Result = {
-    val indexUri = routes.Application.index.url
-    var uri = request.session.get("access_uri").getOrElse(indexUri)
+    var uri = request.session.get("access_uri").getOrElse(routes.PollsSecured.list.url)
     uri = new URI(uri).getPath
-    if(uri.equals(indexUri)){
+    if(uri.equals(routes.Application.index.url)){
       uri = routes.PollsSecured.list.url
     }
     Logger.debug("Login succeeded. Redirecting to uri " + uri)
@@ -86,11 +73,14 @@ trait AuthConfigImpl extends AuthConfig {
   def authorizationFailed(request: RequestHeader): Result = Forbidden(views.html.error(FORBIDDEN, "Du har inte behörighet att se denna sida eller utföra operationen"))
 
   /**
+   * A type that is defined by every action for authorization.
+   */
+  type Authority = User => Boolean // a function
+
+  /**
    * A function that determines what `Authority` a user has.
    * You should alter this procedure to suit your application.
    */
-  def authorize(user: User, authority: Authority): Boolean = {
-    AuthHelper.authorize(user, authority)
-  }
+  def authorize(user: User, authorityFunction: Authority): Boolean = authorityFunction(user)
 }
 

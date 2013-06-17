@@ -116,43 +116,26 @@ INSERT INTO users (
     )
     """
 
-  def update(id: Long, user: User) {
-    if(user.password == NOT_CHANGED_PASSWORD) {
-      updateWithoutPassword(id, user)
-    } else {
-      updateWithPassword(id, user)
-    }
+  def update(id: Long, user: User, updatingPermission: Boolean = false) {
+    val sqlQuery = composeSqlQuery(user, updatingPermission)
+    updateInDB(sqlQuery, id, user)
   }
 
-  private def updateWithoutPassword(id: Long, user: User) {
-    DB.withTransaction {
-      implicit connection =>
-        SQL(updateWithoutPasswordQueryString).on(
-          'id -> id,
-          'firstName -> user.firstName,
-          'lastName -> user.lastName,
-          'email -> user.email.toLowerCase,
-          'phone -> user.phone,
-          'permission -> user.permission.toString
-        ).executeUpdate()
+  private def composeSqlQuery(user: User, updatingPermission: Boolean = false): String = {
+    var sqlQuery = "UPDATE users SET first_name = {firstName}, last_name = {lastName}, email = {email}, phone = {phone}"
+    if(updatingPermission) {
+      sqlQuery += ", permission = {permission}"
     }
+    if(user.password != NOT_CHANGED_PASSWORD) {
+      sqlQuery += ", pwd = {pwd}"
+    }
+    sqlQuery + " WHERE id = {id}"
   }
 
-  val updateWithoutPasswordQueryString =
-    """
-UPDATE users
-SET first_name = {firstName},
-    last_name = {lastName},
-    email = {email},
-    phone = {phone},
-    permission = {permission}
-WHERE id = {id}
-    """
-
-  private def updateWithPassword(id: Long, user: User) {
+  private def updateInDB(sqlQuery: String, id: Long, user: User) {
     DB.withTransaction {
       implicit connection =>
-        SQL(updateWithPasswordQueryString).on(
+        SQL(sqlQuery).on(
           'id -> id,
           'firstName -> user.firstName,
           'lastName -> user.lastName,
@@ -164,17 +147,6 @@ WHERE id = {id}
     }
   }
 
-  val updateWithPasswordQueryString =
-    """
-UPDATE users
-SET first_name = {firstName},
-    last_name = {lastName},
-    email = {email},
-    phone = {phone},
-    permission = {permission},
-    pwd = {pwd}
-WHERE id = {id}
-    """
 
   def delete(id: Long) {
     DB.withTransaction {

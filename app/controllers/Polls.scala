@@ -7,6 +7,8 @@ import models.security.{Administrator, NormalUser}
 import play.api.data.Form
 import play.api.data.Forms._
 import anorm.{Pk, NotAssigned}
+import util.AuthHelper._
+
 
 object Polls extends Controller with OptionalAuthElement with AuthConfigImpl {
 
@@ -26,19 +28,19 @@ object Polls extends Controller with OptionalAuthElement with AuthConfigImpl {
 
 object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
 
-  def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  def list = StackAction(AuthorityKey -> hasPermission(NormalUser)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
     val pollsToList = Poll.findAll()
     Ok(views.html.polls.list(pollsToList))
   }
 
-  def createForm = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def createForm(forConsultantId: Option[Long] = None) = StackAction(AuthorityKey -> hasPermissionOrSelf(Administrator, userId = forConsultantId)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
     val consultants = User.findAll()
-    Ok(views.html.polls.edit(pollForm, consultants = consultants))
+    Ok(views.html.polls.edit(pollForm, consultants = consultants, forConsultantId = forConsultantId))
   }
 
-  def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def create = StackAction(AuthorityKey -> hasPermission(NormalUser)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
     pollForm.bindFromRequest.fold(
       formWithErrors => {
@@ -46,20 +48,30 @@ object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
         BadRequest(views.html.polls.edit(formWithErrors, consultants = consultants))
       },
       poll => {
-        Poll.create(poll)
-        Redirect(routes.PollsSecured.list())
+        if(isAdminOrSelf(loggedInUser, poll.consultant)){
+          Poll.create(poll)
+          Redirect(routes.PollsSecured.list())
+        } else {
+          Unauthorized(views.html.error(UNAUTHORIZED, "Du har inte behörighet att skapa undersökningar för användaren " + poll.consultant.firstName + " " + poll.consultant.lastName))
+        }
       }
     )
   }
 
-  def updateForm(uuid: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def updateForm(uuid: String) = StackAction(AuthorityKey -> hasPermission(NormalUser)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
     val pollToUpdate = Poll.findByUuid(uuid)
     val consultants = User.findAll()
-    Ok(views.html.polls.edit(pollForm.fill(pollToUpdate), uuidToUpdate = Option(uuid), consultants = consultants))
+    if(isAdmin(loggedInUser)){
+      Ok(views.html.polls.edit(pollForm.fill(pollToUpdate), uuidToUpdate = Option(uuid), consultants = consultants))
+    } else if(isSelf(loggedInUser, pollToUpdate.consultant)){
+      Ok(views.html.polls.edit(pollForm.fill(pollToUpdate), uuidToUpdate = Option(uuid), consultants = consultants, forConsultantId = Option(loggedInUser.get.id.get)))
+    } else {
+      Unauthorized(views.html.error(UNAUTHORIZED, "Du har inte behörighet att redigera undersökningar för användaren " + pollToUpdate.consultant.firstName + " " + pollToUpdate.consultant.lastName))
+    }
   }
 
-  def update(uuid: String) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def update(uuid: String) = StackAction(AuthorityKey -> hasPermission(NormalUser)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
     pollForm.bindFromRequest.fold(
       formWithErrors => {
@@ -67,8 +79,12 @@ object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
         BadRequest(views.html.polls.edit(formWithErrors, uuidToUpdate = Option(uuid), consultants = consultants))
       },
       poll => {
-        Poll.update(uuid, poll)
-        Redirect(routes.Polls.show(uuid))
+        if(isAdminOrSelf(loggedInUser, poll.consultant)){
+          Poll.update(uuid, poll)
+          Redirect(routes.Polls.show(uuid))
+        } else {
+          Unauthorized(views.html.error(UNAUTHORIZED, "Du har inte behörighet att redigera undersökningar för användaren " + poll.consultant.firstName + " " + poll.consultant.lastName))
+        }
       }
     )
   }

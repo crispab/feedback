@@ -150,7 +150,7 @@
       @if(poll.isOpen) {
         <a href="@routes.Metrics.createForm(poll.uuid)" class="btn btn-primary"><i class="icon-plus icon-white"></i> Sätt betyg</a>
       }
-      @if(isAdmin(loggedInUser)) {
+      @if(isAdminOrSelf(loggedInUser, poll.consultant)) {
         <a href="@routes.PollsSecured.updateForm(poll.uuid)" class="btn"><i class="icon-pencil"></i> Redigera</a>
       }
     </div>

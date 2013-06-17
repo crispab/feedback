@@ -7,56 +7,56 @@ import anorm.{Id, Pk, NotAssigned}
 import play.api.data.Form
 import jp.t2v.lab.play2.auth.AuthElement
 import models.security.{NormalUser, Administrator}
+import util.AuthHelper._
 
 object Users extends Controller with AuthElement with AuthConfigImpl {
 
-  def list = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  def list = StackAction(AuthorityKey -> hasPermission(NormalUser)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
     val usersToList = User.findAll()
     Ok(views.html.users.list(usersToList))
   }
 
-  def show(id : Long) = StackAction(AuthorityKey -> NormalUser) { implicit request =>
+  def show(id : Long) = StackAction(AuthorityKey -> hasPermission(NormalUser)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
     val userToShow = User.find(id)
     Ok(views.html.users.show(userToShow))
   }
 
-  def createForm = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def createForm = StackAction(AuthorityKey -> hasPermission(Administrator)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
     Ok(views.html.users.edit(userCreateForm))
   }
 
-  def updateForm(id: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def create = StackAction(AuthorityKey -> hasPermission(Administrator)_) { implicit request =>
+    implicit val loggedInUser = Option(loggedIn)
+    userCreateForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(views.html.users.edit(formWithErrors)),
+      user => {
+        User.create(user)
+        Redirect(routes.Users.list())
+      }
+    )
+  }
+
+  def updateForm(id: Long) = StackAction(AuthorityKey -> hasPermissionOrSelf(Administrator, userId = id)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
     val userToUpdate = User.find(id)
     Ok(views.html.users.edit(userUpdateForm.fill(userToUpdate), idToUpdate = Option(id)))
   }
 
-  def create = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def update(id: Long) = StackAction(AuthorityKey -> hasPermissionOrSelf(Administrator, userId = id)_) { implicit request =>
     implicit val loggedInUser = Option(loggedIn)
-      userCreateForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.users.edit(formWithErrors)),
-        user => {
-          User.create(user)
-          Redirect(routes.Users.list())
-        }
-      )
+    userUpdateForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(views.html.users.edit(formWithErrors, Option(id))),
+      user => {
+        User.update(id, user, updatingPermission = isAdmin(loggedInUser))
+        Redirect(routes.Users.show(id))
+      }
+    )
   }
 
-  def update(id: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
-    implicit val loggedInUser = Option(loggedIn)
-    val whatever = userUpdateForm.bindFromRequest
-    whatever.fold(
-        formWithErrors => BadRequest(views.html.users.edit(formWithErrors, Option(id))),
-        user => {
-          User.update(id, user)
-          Redirect(routes.Users.show(id))
-        }
-      )
-  }
-
-  def delete(id: Long) = StackAction(AuthorityKey -> Administrator) { implicit request =>
+  def delete(id: Long) = StackAction(AuthorityKey -> hasPermission(Administrator)_) { implicit request =>
     User.delete(id)
     Redirect(routes.Users.list())
   }

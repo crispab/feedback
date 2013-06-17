@@ -18,7 +18,7 @@ GET     /users                      controllers.Users.list
 GET     /users/:id                  controllers.Users.show(id: Long)
 
 # Polls
-GET     /polls/new                  controllers.PollsSecured.createForm
+GET     /polls/new                  controllers.PollsSecured.createForm(forConsultantId: Option[Long] ?= None)
 POST    /polls                      controllers.PollsSecured.create
 GET     /polls/:uuid/edit           controllers.PollsSecured.updateForm(uuid: String)
 POST    /polls/:uuid                controllers.PollsSecured.update(uuid: String)

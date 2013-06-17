@@ -1,5 +1,6 @@
-@(pollForm: Form[Poll], uuidToUpdate: Option[String] = None, consultants: Seq[User])(implicit loggedInUser: Option[User])
+@(pollForm: Form[Poll], uuidToUpdate: Option[String] = None, consultants: Seq[User], forConsultantId: Option[Long] = None)(implicit loggedInUser: Option[User])
 
+@import util.AuthHelper._
 @import util.FormHelper._
 @import util.Section._
 
@@ -21,6 +22,10 @@
     }
   }
 
+  @selectedConsultant() = @{
+    pollForm("consultantId").value.getOrElse(forConsultantId.getOrElse(-88888L).toString)
+  }
+
 
 @page("Redigera undersökning " + field("customer"), section = Polls) {
 
@@ -39,7 +44,7 @@
 
   <div class="row">
     <div class="span5">
-      <form class="form-horizontal" action="@theAction()" method="POST">
+      <form id="editForm" class="form-horizontal" action="@theAction()" method="POST">
         <fieldset>
 
           <div class='control-group @hasErrors("customer")'>
@@ -71,10 +76,10 @@
           <div class='control-group @hasErrors("consultantId")'>
             <label class="control-label" for="consultantId">Konsult</label>
             <div class="controls">
-              <select id="consultantId" name="consultantId" required="">
+              <select id="consultantId" name="consultantId" required="" @if(!isAdmin(loggedInUser)){disabled=""}>
                 <option>Ingen vald</option>
                 @consultants.map { consultant =>
-                  <option value="@consultant.id.get" @if(consultant.id.get.toString.equals(field("consultantId"))) {selected=""} >
+                  <option value="@consultant.id.get" @if(consultant.id.get.toString.equals(selectedConsultant())) {selected=""} >
                     @consultant.firstName @consultant.lastName
                   </option>
                 }
@@ -114,4 +119,10 @@
       </form>
     </div>
   </div>
+
+  <script language="JavaScript">
+    $('#editForm').submit(function(){
+      $('#consultantId').removeAttr('disabled');
+    });
+  </script>
 }

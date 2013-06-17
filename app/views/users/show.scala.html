@@ -30,7 +30,7 @@
 
     <div class="row">
       <div class="span5">
-        @if(isSameOrAdmin(loggedInUser = loggedInUser, user = user)) {
+        @if(isAdminOrSelf(loggedInUser = loggedInUser, user = user)) {
           <p></p>
           <a href="@routes.Users.updateForm(user.id.get)" class="btn"><i class="icon-pencil"></i>
             Redigera</a>
@@ -68,10 +68,10 @@
     </div>
   </div>
 
-  @if(isAdmin(loggedInUser)) {
+  @if(isAdminOrSelf(loggedInUser = loggedInUser, user = user)) {
     <div class="row">
       <div class="span5 btn-row">
-        <a href="@routes.PollsSecured.createForm()" class="btn btn-primary"><i class="icon-plus icon-white"></i> Ny undersökning</a>
+        <a href="@routes.PollsSecured.createForm(Option(user.id.get))" class="btn btn-primary"><i class="icon-plus icon-white"></i> Ny undersökning</a>
       </div>
     </div>
   }
