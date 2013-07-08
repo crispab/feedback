@@ -7,6 +7,7 @@ import play.api.Logger
 import reflect._
 import play.api.http.Status._
 import java.net.URI
+import play.api.i18n.{Lang, Messages}
 
 
 trait AuthConfigImpl extends AuthConfig {
@@ -64,13 +65,19 @@ trait AuthConfigImpl extends AuthConfig {
    * If the user is not logged in and tries to access a protected resource then redirect them as follows:
    */
   def authenticationFailed(request: RequestHeader): Result = {
-    Redirect(routes.Application.loginForm).withSession(("access_uri" , request.uri)).flashing(("error" , "Du behöver vara inloggad för att komma åt denna sida"))
+    import play.api.Play.current
+    implicit val lang = Lang.preferred(request.acceptLanguages)
+    Redirect(routes.Application.loginForm).withSession(("access_uri" , request.uri)).flashing(("error" , Messages("application.error.loginrequired")))
   }
 
   /**
    * If authorization failed (usually incorrect password) redirect the user as follows:
    */
-  def authorizationFailed(request: RequestHeader): Result = Forbidden(views.html.error(FORBIDDEN, "Du har inte behörighet att se denna sida eller utföra operationen"))
+  def authorizationFailed(request: RequestHeader): Result = {
+    import play.api.Play.current
+    implicit val lang = Lang.preferred(request.acceptLanguages)
+    Forbidden(views.html.error(FORBIDDEN, Messages("application.error.noauthority")))
+  }
 
   /**
    * A type that is defined by every action for authorization.

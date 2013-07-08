@@ -1,4 +1,4 @@
-@()(implicit loggedInUser: Option[User])
+@()(implicit loggedInUser: Option[User], lang: Lang)
 
 @import util.Section._
 
@@ -8,13 +8,9 @@
 
   <div class="row">
     <div class="span5">
-      <h2>Välkommen till Feedback</h2>
-      <p>
-        Feedback är en tjänst där kunder kan ge återkoppling till Crisp-konsulter.
-      </p>
-      <p>
-        Om du är kund till Crisp skall du ha fått en direktlänk för att ge återkoppling, annars be din konsult om denna.
-      </p>
+      <h2>@Messages("index.heading")</h2>
+      <p>@Messages("index.description")</p>
+      <p>@Messages("index.guidance")</p>
     </div>
   </div>
 }

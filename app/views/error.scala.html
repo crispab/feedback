@@ -1,4 +1,4 @@
-@(errorCode: Long, errorMessage: String)(implicit loggedInUser: Option[User] = None)
+@(errorCode: Long, errorMessage: String)(implicit loggedInUser: Option[User] = None, lang: Lang)
 
 @import util.Section._
 @import play.api.http.Status._
@@ -6,8 +6,8 @@
 
 @codeToText(code: Long) = @{
   code match {
-    case NOT_FOUND => code + " sidan finns ej"
-    case FORBIDDEN => code + " behörighet saknas"
+    case NOT_FOUND => code + " " + Messages("error.pagenotfound")
+    case FORBIDDEN => code + " " + Messages("error.nopermission")
     case _ => code + ""
   }
 }
@@ -19,7 +19,7 @@
 
   <div class="row">
     <div class="span5">
-      <h2>Hoppsan!</h2>
+      <h2>@Messages("error.heading")</h2>
       <div class="alert alert-error">
         <a class="close" data-dismiss="alert" href="#">×</a>
         <h4 class="alert-heading">@codeToText(errorCode)</h4>

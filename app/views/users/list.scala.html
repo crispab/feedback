@@ -1,24 +1,24 @@
-@(consultants: Seq[User])(implicit loggedInUser: Option[User])
+@(consultants: Seq[User])(implicit loggedInUser: Option[User], lang: Lang)
 
 @import util.Section._
 @import util.AuthHelper._
 @import util.EmailHelper._
 @import util.GravatarHelper._
 
-@page("Konsulter", section = Users) {
+@page(Messages("navigation.consultants"), section = Users) {
 
-  @breadcrumb(Seq(), "Konsulter")
+  @breadcrumb(Seq(), Messages("navigation.consultants"))
 
   <div class="row">
     <div class="span5">
-      <h2>Konsulter</h2>
+      <h2>@Messages("navigation.consultants")</h2>
     </div>
   </div>
 
   @if(isAdmin(loggedInUser)) {
     <div class="row">
       <div class="span5 btn-row">
-        <a href="@routes.Users.createForm()" class="btn"><i class="icon-plus"></i> Ny konsult</a>
+        <a href="@routes.Users.createForm()" class="btn"><i class="icon-plus"></i> @Messages("navigation.new") @Messages("model.consultant")</a>
       </div>
     </div>
   }

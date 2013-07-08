@@ -1,4 +1,4 @@
-@(user: models.User)(implicit loggedInUser: Option[User])
+@(user: models.User)(implicit loggedInUser: Option[User], lang: Lang)
 
 @import util.AuthHelper._
 @import util.EmailHelper._
@@ -7,7 +7,7 @@
 
 @page(user.firstName + " " + user.lastName, section = Users) {
 
-  @breadcrumb(Seq("Konsulter" -> routes.Users.list()),
+  @breadcrumb(Seq(Messages("navigation.consultants") -> routes.Users.list()),
     user.firstName + " " + user.lastName)
 
   <div class="row">
@@ -22,9 +22,8 @@
     </div>
     <div class="span4">
       <div class="row"><div class="span1">&nbsp;</div></div>
-      <div class="row"><div class="span1"><strong>
-        Epost:</strong></div><div class="span3">@abbreviated(user.email, isLoggedIn(loggedInUser))</div></div>
-      <div class="row"><div class="span1"><strong>Telefon:</strong></div><div class="span3">@user.phone</div></div>
+      <div class="row"><div class="span1"><strong>@Messages("model.consultant.email"):</strong></div><div class="span3">@abbreviated(user.email, isLoggedIn(loggedInUser))</div></div>
+      <div class="row"><div class="span1"><strong>@Messages("model.consultant.phone"):</strong></div><div class="span3">@user.phone</div></div>
     </div>
   </div>
 
@@ -33,28 +32,28 @@
         @if(isAdminOrSelf(loggedInUser = loggedInUser, user = user)) {
           <p></p>
           <a href="@routes.Users.updateForm(user.id.get)" class="btn"><i class="icon-pencil"></i>
-            Redigera</a>
+            @Messages("navigation.edit")</a>
         }
         @if(isAdmin(loggedInUser)) {
-          <a data-toggle="modal" href="#remove_user_@user.id" class="btn"><i class="icon-trash"></i> Ta bort</a>
+          <a data-toggle="modal" href="#remove_user_@user.id" class="btn"><i class="icon-trash"></i> @Messages("navigation.delete")</a>
 
           <div id="remove_user_@user.id" class="modal smaller-modal hide fade" style="display: none;">
             <div class="modal-header">
               <button class="close transparent" data-dismiss="modal"><i class="icon-remove"></i></button>
-              <h3>Vill du ta bort konsulten?</h3>
+              <h3>@Messages("users.delete.title")</h3>
             </div>
             <div class="modal-body">
               <p>
-                Du håller på att ta bort konsulten <strong>@user.firstName @user.lastName</strong>.
+                @Messages("users.delete.info", user.firstName + " " + user.lastName)
               </p>
               <p>
-                Vill du fortsätta?
+              @Messages("users.delete.confirm")
               </p>
             </div>
             <div class="modal-footer">
               <form action="@routes.Users.delete(user.id.get)" method="POST">
-                <a href="#" class="btn" data-dismiss="modal"><i class="icon-ban-circle"></i> Avbryt</a>
-                <button type="submit" class="btn btn-primary"><i class="icon-trash icon-white"></i> Ta bort</button>
+                <a href="#" class="btn" data-dismiss="modal"><i class="icon-ban-circle"></i> @Messages("navigation.cancel")</a>
+                <button type="submit" class="btn btn-primary"><i class="icon-trash icon-white"></i> @Messages("navigation.delete")</button>
               </form>
             </div>
           </div>
@@ -64,14 +63,14 @@
 
   <div class="row">
     <div class="span5">
-      <h3>Undersökningar</h3>
+      <h3>@Messages("navigation.polls")</h3>
     </div>
   </div>
 
   @if(isAdminOrSelf(loggedInUser = loggedInUser, user = user)) {
     <div class="row">
       <div class="span5 btn-row">
-        <a href="@routes.PollsSecured.createForm(Option(user.id.get))" class="btn btn-primary"><i class="icon-plus icon-white"></i> Ny undersökning</a>
+        <a href="@routes.PollsSecured.createForm(Option(user.id.get))" class="btn btn-primary"><i class="icon-plus icon-white"></i> @Messages("navigation.new") @Messages("model.poll")</a>
       </div>
     </div>
   }
@@ -87,9 +86,9 @@
           </div>
           <div class="span1">
           @if(poll.isOpen) {
-            <span class="label label-success">Pågår</span>
+            <span class="label label-success">@Messages("model.poll.ongoing")</span>
           } else {
-            <span class="label label-important">Avslutad</span>
+            <span class="label label-important">@Messages("model.poll.closed")</span>
           }
           </div>
         </div>

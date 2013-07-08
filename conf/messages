@@ -1,0 +1,79 @@
+application.createdby=Created by
+application.edit.error=Input error
+application.error.loginrequired=You need to be logged in to access this page
+application.error.noauthority=Unauthorized access
+application.error.pollnotfound=Unable to find poll with id: {0}
+application.index=Happiness index
+application.name=Feedback
+
+error.heading=Ooops!
+error.login=Invalid email address or password.
+error.nopermission=No permission
+error.pagenotfound=Page not found
+
+index.description=Feedback is a service for Crisp clients where they can express how happy they are with our services.
+index.guidance=If you are a client of Crisp, you can get a direct link for personal feedback from your Crisp consultant.
+index.heading=Welcome to Feedback
+
+login.email=Email
+login.password=Password
+
+metrics.create.closedpoll=This poll is closed
+metrics.create.higherscore=What would make you put a higher score? (optional)
+metrics.create.name=What is your name? (optional)
+metrics.create.question=How happy are you with Crisp and {0} today?
+metrics.create.select=Select a score!
+metrics.create.superhappy=super happy
+
+model.assignment=Engagement
+model.consultant.administrator=Administrator
+model.consultant.email=Email
+model.consultant.firstname=First name
+model.consultant.lastname=Last name
+model.consultant.password=Password
+model.consultant.phone=Phone
+model.consultant=Consultant
+model.customer=Client
+model.poll.closed=Closed
+model.poll.contactperson=Contact
+model.poll.ongoing=Ongoing
+model.poll=Poll
+
+navigation.cancel=Cancel
+navigation.consultants=Consultants
+navigation.delete=Deltet
+navigation.edit=Edit
+navigation.home=Home
+navigation.input=Input
+navigation.login=Login
+navigation.logout=Logout
+navigation.mypage=My page
+navigation.new=New
+navigation.polls=Polls
+navigation.reset=Reset
+navigation.save=Save
+navigation.score=Give a score
+
+polls.edit.error.assignment=Enter an assignment description
+polls.edit.error.consultant=Choose the consultant with the assignment
+polls.edit.error.contactperson=Enter a contact person
+polls.edit.error.createunauthorized=You have no authority to create polls for the user {0}
+polls.edit.error.customer=Enter the name of the client
+polls.edit.error.editunauthorized=You have no authority to edit polls for the user {0}
+polls.edit.noneselected=Make a selection
+polls.edit.title=Edit poll
+polls.poll=Happiness inquiry
+polls.show.nodata=No data to show yet
+polls.show.score=Score
+polls.show.title=Happiness index
+
+users.delete.confirm=Continue?
+users.delete.info=You are about to remove the consultant {0}.
+users.delete.title=Do you want to remove the consultant?
+users.edit.error.email=Enter a correct email address
+users.edit.error.firstname=First name missing
+users.edit.error.lastname=Last name missing
+users.edit.error.notuniqueemail=The email address is already in use
+users.edit.error.password=You must provide a password of at least 8 characters
+users.edit.error.phone=Invalid phone number
+users.edit.title=Edit consultants

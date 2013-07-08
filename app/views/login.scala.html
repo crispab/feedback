@@ -6,9 +6,9 @@
 
 @hasErrors(fieldName: String) = @{ if(loginForm.hasErrors || loginForm.hasGlobalErrors) { "error" } }
 
-@page(title = "Feedback", section = Login){
+@page(title = Messages("application.name"), section = Login){
 
-@breadcrumb(Seq(), "Logga in")
+@breadcrumb(Seq(), Messages("navigation.login"))
 
 <div class="row">
   <div class="span5">
@@ -27,20 +27,20 @@
     @if(loginForm.hasErrors || loginForm.hasGlobalErrors) {
       <div class="alert alert-error">
         <a class="close" data-dismiss="alert" href="#">×</a>
-        <p>Felaktig epostadress eller lösenord.</p>
+        <p>@Messages("error.login")</p>
       </div>
     }
     <form class="form-horizontal" action="@routes.Application.authenticate()" method="POST">
 
       <div class='control-group @hasErrors("email")'>
-        <label class="control-label" for="email">Epost</label>
+        <label class="control-label" for="email">@Messages("login.email")</label>
         <div class="controls">
           <input type="email" class="input-xlarge" id="email" name="email" value='@field("email")' required="" autofocus=""/>
         </div>
       </div>
 
       <div class='control-group @hasErrors("password")'>
-        <label class="control-label" for="password">Lösenord</label>
+        <label class="control-label" for="password">@Messages("login.password")</label>
         <div class="controls">
           <input type="password" id="password" name="password" value='@field("password")' required="" />
         </div>
@@ -48,12 +48,12 @@
 
       <div class="control-group">
         <div class="controls">
-          <button type="submit" class="btn">Logga in</button>
+          <button type="submit" class="btn">@Messages("navigation.login")</button>
         </div>
       </div>
     </form>
   </div>
 </div>
-}(loggedInUser = None)
+}(loggedInUser = None, lang)
 
 

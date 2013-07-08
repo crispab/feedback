@@ -1,9 +1,9 @@
-@(pathElements: Seq[(String, Call)], active: String)
+@(pathElements: Seq[(String, Call)], active: String)(implicit lang: Lang)
 
 <div class="row">
   <div class="span5">
     <ul class="breadcrumb">
-      <li><a href="@routes.Application.index()">Hem</a>
+      <li><a href="@routes.Application.index()">@Messages("navigation.home")</a>
 
       @pathElements.map { pathElement =>
         <span class="divider">»</span></li>

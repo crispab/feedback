@@ -1,4 +1,4 @@
-@(pollForm: Form[Poll], uuidToUpdate: Option[String] = None, consultants: Seq[User], forConsultantId: Option[Long] = None)(implicit loggedInUser: Option[User])
+@(pollForm: Form[Poll], uuidToUpdate: Option[String] = None, consultants: Seq[User], forConsultantId: Option[Long] = None)(implicit loggedInUser: Option[User], lang: Lang)
 
 @import util.AuthHelper._
 @import util.FormHelper._
@@ -27,18 +27,18 @@
   }
 
 
-@page("Redigera undersökning " + field("customer"), section = Polls) {
+@page(Messages("polls.edit.title") + " " + field("customer"), section = Polls) {
 
   @if(creatingNew()) {
-    @breadcrumb(Seq("Undersökningar" -> routes.PollsSecured.list()), "Ny")
+    @breadcrumb(Seq(Messages("navigation.polls") -> routes.PollsSecured.list()), Messages("navigation.new"))
   } else {
-    @breadcrumb(Seq("Undersökningar" -> routes.PollsSecured.list(), field("customer") -> routes.Polls.show(uuidToUpdate.get)),
-      "Redigera")
+    @breadcrumb(Seq(Messages("navigation.polls") -> routes.PollsSecured.list(), field("customer") -> routes.Polls.show(uuidToUpdate.get)),
+      Messages("navigation.edit"))
   }
 
   <div class="row">
     <div class="span5">
-      <h2>@if(creatingNew()) {Ny} else {Redigera} Undersökning</h2>
+      <h2>@if(creatingNew()) {@Messages("navigation.new")} else {@Messages("navigation.edit")} @Messages("model.poll")</h2>
     </div>
   </div>
 
@@ -48,49 +48,49 @@
         <fieldset>
 
           <div class='control-group @hasErrors("customer")'>
-            <label class="control-label" for="customer">Kund</label>
+            <label class="control-label" for="customer">@Messages("model.customer")</label>
             <div class="controls">
               <input type="text" maxlength="127" class="input-xlarge" id="customer" name="customer" value='@field("customer")' required="" >
-              <span class="show-on-error">Fyll i vem kunden är</span>
+              <span class="show-on-error">@Messages("polls.edit.error.customer")</span>
             </div>
           </div>
 
           <div class='control-group @hasErrors("contactPerson")'>
-            <label class="control-label" for="contactPerson">Kontaktperson</label>
+            <label class="control-label" for="contactPerson">@Messages("model.poll.contactperson")</label>
             <div class="controls">
               <input type="text" maxlength="127" class="input-xlarge" id="contactPerson" name="contactPerson" value='@field("contactPerson")' />
-              <span class="show-on-error">Fyll i en kontaktperson</span>
+              <span class="show-on-error">@Messages("polls.edit.error.contactperson")</span>
             </div>
           </div>
 
 
           <div class='control-group @hasErrors("assignment")'>
-            <label class="control-label" for="assignment">Uppdrag</label>
+            <label class="control-label" for="assignment">@Messages("model.assignment")</label>
             <div class="controls">
               <input type="text" maxlength="127" class="input-xlarge" id="assignment" name="assignment" value='@field("assignment")' />
-              <span class="show-on-error">Fyll i en uppdragsbeskrivning</span>
+              <span class="show-on-error">@Messages("polls.edit.error.assignment")</span>
             </div>
           </div>
 
 
           <div class='control-group @hasErrors("consultantId")'>
-            <label class="control-label" for="consultantId">Konsult</label>
+            <label class="control-label" for="consultantId">@Messages("model.consultant")</label>
             <div class="controls">
               <select id="consultantId" name="consultantId" required="" @if(!isAdmin(loggedInUser)){disabled=""}>
-                <option>Ingen vald</option>
+                <option>@Messages("polls.edit.noneselected")</option>
                 @consultants.map { consultant =>
                   <option value="@consultant.id.get" @if(consultant.id.get.toString.equals(selectedConsultant())) {selected=""} >
                     @consultant.firstName @consultant.lastName
                   </option>
                 }
               </select>
-              <span class="show-on-error">Välj den konsult som har uppdraget</span>
+              <span class="show-on-error">@Messages("polls.edit.error.consultant")</span>
             </div>
           </div>
 
 
           <div class='control-group @hasErrors("isOpen")'>
-            <label class="control-label" for="isOpen">Pågår</label>
+            <label class="control-label" for="isOpen">@Messages("model.poll.ongoing")</label>
             <div class="controls">
               <input type="checkbox" class="input-xlarge" id="isOpen" name="isOpen" value="true" @if(pollIsOpen()){checked=""} />
             </div>
@@ -100,7 +100,7 @@
           @if(pollForm.hasErrors || pollForm.hasGlobalErrors) {
             <div class="alert alert-error">
               <a class="close" data-dismiss="alert" href="#">×</a>
-              <h4 class="alert-heading">Inmatningsfel</h4>
+              <h4 class="alert-heading">@Messages("application.edit.error")</h4>
               <p>@errors(pollForm).mkString(", ")</p>
             </div>
           }
@@ -109,10 +109,10 @@
 
           <div class="form-actions">
             <button type="submit" class="btn btn-primary" id="action" name="action" value="save"><i
-            class="icon-ok icon-white"></i>Spara
+            class="icon-ok icon-white"></i> @Messages("navigation.save")
             </button>
             <button type="button" class="btn" id="cancel" onClick='history.go(-1)'><i
-            class="icon-ban-circle"></i>Avbryt
+            class="icon-ban-circle"></i> @Messages("navigation.cancel")
             </button>
           </div>
         </fieldset>
@@ -121,6 +121,7 @@
   </div>
 
   <script language="JavaScript">
+    // make sure disabled value is actually posted by enabling it just before submit
     $('#editForm').submit(function(){
       $('#consultantId').removeAttr('disabled');
     });

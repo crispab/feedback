@@ -1,4 +1,4 @@
-@(metricForm: Form[Metric], poll: models.Poll)(implicit loggedInUser: Option[User])
+@(metricForm: Form[Metric], poll: models.Poll)(implicit loggedInUser: Option[User], lang: Lang)
 
 @import util.GravatarHelper._
 @import util.Section._
@@ -15,13 +15,13 @@
 
 @page(poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName, section = Polls) {
 
-  @breadcrumb(Seq("Undersökningar" -> routes.PollsSecured.list(),
+  @breadcrumb(Seq(Messages("navigation.polls") -> routes.PollsSecured.list(),
     poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName -> routes.Polls.show(poll.uuid)),
-    "Inmatning")
+    Messages("navigation.input"))
 
   <div class="row">
     <div class="span5">
-      <h2>Nöjdhetsundersökning</h2>
+      <h2>@Messages("polls.poll")</h2>
     </div>
   </div>
 
@@ -32,9 +32,9 @@
     <div class="span4">
       <div class="row"><div class="span1"><strong>&nbsp;</strong></div></div>
       <div class="row"><div class="span1"><strong>
-        Konsult:</strong></div><div class="span3">@poll.consultant.firstName @poll.consultant.lastName</div></div>
-      <div class="row"><div class="span1"><strong>Kund:</strong></div><div class="span3">@poll.customer</div></div>
-      <div class="row"><div class="span1"><strong>Uppdrag:</strong></div><div class="span3">@poll.assignment</div></div>
+      @Messages("model.consultant"):</strong></div><div class="span3">@poll.consultant.firstName @poll.consultant.lastName</div></div>
+      <div class="row"><div class="span1"><strong>@Messages("model.customer"):</strong></div><div class="span3">@poll.customer</div></div>
+      <div class="row"><div class="span1"><strong>@Messages("model.assignment"):</strong></div><div class="span3">@poll.assignment</div></div>
     </div>
   </div>
 
@@ -50,28 +50,28 @@
         <form class="well" action="@routes.Metrics.create(poll.uuid)" method="POST">
           <fieldset>
             <div class='control-group @hasErrors("score")'>
-              <label class="control-label bigger" for="score">Hur nöjd är du med Crisp och @poll.consultant.firstName @poll.consultant.lastName idag?</label>
+              <label class="control-label bigger" for="score">@Messages("metrics.create.question", poll.consultant.firstName + " " + poll.consultant.lastName)</label>
               <div class="controls">
                 <label class="radio inline"><input type="radio" name="score" id="score1" value="1">1 &nbsp;</label>
                 <label class="radio inline"><input type="radio" name="score" id="score2" value="2">2 &nbsp;</label>
                 <label class="radio inline"><input type="radio" name="score" id="score3" value="3">3 &nbsp;</label>
                 <label class="radio inline"><input type="radio" name="score" id="score4" value="4">4 &nbsp;</label>
-                <label class="radio inline"><input type="radio" name="score" id="score5" value="5">5 - supernöjd</label>
+                <label class="radio inline"><input type="radio" name="score" id="score5" value="5">5 - @Messages("metrics.create.superhappy")</label>
               </div>
-              <span class="show-on-error">Välj en siffra!</span>
+              <span class="show-on-error">@Messages("metrics.create.select")</span>
             </div>
 
             <p>&nbsp;</p>
 
             <div class='control-group'>
-              <label class="control-label" for="comment">Vad skulle få dig att sätta en högre siffra? (frivilligt)</label>
+              <label class="control-label" for="comment">@Messages("metrics.create.higherscore")</label>
               <div class="controls">
                 <textarea maxlength="256" class="span4" id="comment" name="comment" rows="2">@field("comment")</textarea>
               </div>
             </div>
 
             <div class='control-group'>
-              <label class="control-label" for="name">Vad heter du? (frivilligt)</label>
+              <label class="control-label" for="name">@Messages("metrics.create.name")</label>
               <div class="controls">
                 <input type="text" maxlength="127" class="input-xlarge" id="name" name="name" value='@field("name")'>
               </div>
@@ -80,10 +80,10 @@
             <input type="hidden" id="uuid" name="uuid" value="@poll.uuid">
 
             <button type="submit" class="btn btn-primary" id="action" name="action" value="save">
-              <i class="icon-ok icon-white"></i> Skicka
+              <i class="icon-ok icon-white"></i> @Messages("navigation.save")
             </button>
             <button type="button" class="btn" id="cancel" onClick='history.go(0)'>
-              <i class="icon-ban-circle"></i> Nollställ
+              <i class="icon-ban-circle"></i> @Messages("navigation.reset")
             </button>
           </fieldset>
         </form>
@@ -94,7 +94,7 @@
       <div class="span5">
         <div class="alert alert-error">
           <a class="close" data-dismiss="alert" href="#">×</a>
-          Den här undersökningen är avslutad
+          @Messages("metrics.create.closedpoll")
         </div>
       </div>
     </div>

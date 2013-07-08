@@ -6,6 +6,7 @@ import play.api.data.Forms._
 import anorm.{Pk, NotAssigned}
 import play.api.mvc._
 import jp.t2v.lab.play2.auth.OptionalAuthElement
+import play.api.i18n.Messages
 
 object Metrics extends Controller with OptionalAuthElement with AuthConfigImpl {
 
@@ -15,7 +16,7 @@ object Metrics extends Controller with OptionalAuthElement with AuthConfigImpl {
       val forPoll = Poll.findByUuid(uuid)
       Ok(views.html.metrics.create(metricForm, forPoll))
     } catch {
-      case e: Exception => NotFound(views.html.error(NOT_FOUND, "Kan inte hitta undersökning med id '" + uuid + "'"))
+      case e: Exception => NotFound(views.html.error(NOT_FOUND, Messages("application.error.pollnotfound", uuid)))
     }
   }
 

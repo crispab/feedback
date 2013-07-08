@@ -1,4 +1,4 @@
-@(poll: models.Poll, metrics: Seq[Metric])(implicit loggedInUser: Option[User])
+@(poll: models.Poll, metrics: Seq[Metric])(implicit loggedInUser: Option[User], lang: Lang)
 
 @import util.AuthHelper._
 @import util.GravatarHelper._
@@ -6,12 +6,12 @@
 
 @page(poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName, section = Polls) {
 
-  @breadcrumb(Seq("Undersökningar" -> routes.PollsSecured.list()),
+  @breadcrumb(Seq(Messages("navigation.polls") -> routes.PollsSecured.list()),
     poll.customer + ": " + poll.consultant.firstName + " " + poll.consultant.lastName)
 
   <div class="row">
     <div class="span5">
-      <h2>Nöjdhetsundersökning</h2>
+      <h2>@Messages("polls.poll")</h2>
     </div>
   </div>
 
@@ -27,15 +27,15 @@
       @if(poll.isOpen) {
         <div class="row"><div class="span1">&nbsp;</div></div>
       } else {
-        <div class="row"><div class="span1"><span class="label label-important">Avslutad</span></div></div>
+        <div class="row"><div class="span1"><span class="label label-important">@Messages("model.poll.closed")</span></div></div>
       }
       @if(isLoggedIn(loggedInUser)) {
-        <div class="row"><div class="span1"><strong>Konsult:</strong></div><div class="span3"><a href="@routes.Users.show(poll.consultant.id.get)">@poll.consultant.firstName @poll.consultant.lastName</a></div></div>
+        <div class="row"><div class="span1"><strong>@Messages("model.consultant"):</strong></div><div class="span3"><a href="@routes.Users.show(poll.consultant.id.get)">@poll.consultant.firstName @poll.consultant.lastName</a></div></div>
       } else {
-        <div class="row"><div class="span1"><strong>Konsult:</strong></div><div class="span3">@poll.consultant.firstName @poll.consultant.lastName</div></div>
+        <div class="row"><div class="span1"><strong>@Messages("model.consultant"):</strong></div><div class="span3">@poll.consultant.firstName @poll.consultant.lastName</div></div>
       }
-      <div class="row"><div class="span1"><strong>Kund:</strong></div><div class="span3">@poll.customer</div></div>
-      <div class="row"><div class="span1"><strong>Uppdrag:</strong></div><div class="span3">@poll.assignment</div></div>
+      <div class="row"><div class="span1"><strong>@Messages("model.customer"):</strong></div><div class="span3">@poll.customer</div></div>
+      <div class="row"><div class="span1"><strong>@Messages("model.assignment"):</strong></div><div class="span3">@poll.assignment</div></div>
     </div>
   </div>
 
@@ -73,7 +73,7 @@
             x = point.x,
             y = point.y;
 
-          return 'Betyg: ' + y  + comments[point.index] + names[point.index];
+          return '@Messages("polls.show.score"): ' + y  + comments[point.index] + names[point.index];
         }
 
         options = {
@@ -102,7 +102,7 @@
             trackFormatter: tooltip
           },
           HtmlText : false,
-          title : 'Nöjdhetsindex'
+          title : '@Messages("polls.show.title")'
         };
 
 
@@ -139,7 +139,7 @@
 
     <div class="row">
       <div class="span5">
-        <p class="well">Inga data än så länge</p>
+        <p class="well">@Messages("polls.show.nodata")</p>
       </div>
     </div>
 
@@ -148,10 +148,10 @@
   <div class="row">
     <div class="span5 btn-row">
       @if(poll.isOpen) {
-        <a href="@routes.Metrics.createForm(poll.uuid)" class="btn btn-primary"><i class="icon-plus icon-white"></i> Sätt betyg</a>
+        <a href="@routes.Metrics.createForm(poll.uuid)" class="btn btn-primary"><i class="icon-plus icon-white"></i> @Messages("navigation.score")</a>
       }
       @if(isAdminOrSelf(loggedInUser, poll.consultant)) {
-        <a href="@routes.PollsSecured.updateForm(poll.uuid)" class="btn"><i class="icon-pencil"></i> Redigera</a>
+        <a href="@routes.PollsSecured.updateForm(poll.uuid)" class="btn"><i class="icon-pencil"></i> @Messages("navigation.edit")</a>
       }
     </div>
   </div>

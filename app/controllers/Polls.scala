@@ -8,6 +8,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import anorm.{Pk, NotAssigned}
 import util.AuthHelper._
+import play.api.i18n.Messages
 
 
 object Polls extends Controller with OptionalAuthElement with AuthConfigImpl {
@@ -19,7 +20,7 @@ object Polls extends Controller with OptionalAuthElement with AuthConfigImpl {
       val metrics = Metric.findByPoll(pollToShow)
       Ok(views.html.polls.show(pollToShow, metrics))
     } catch {
-      case e: Exception => NotFound(views.html.error(NOT_FOUND, "Kan inte hitta undersökning med id '" + uuid + "'"))
+      case e: Exception => NotFound(views.html.error(NOT_FOUND, Messages("application.error.pollnotfound", uuid)))
     }
   }
 }
@@ -52,7 +53,7 @@ object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
           Poll.create(poll)
           Redirect(routes.PollsSecured.list())
         } else {
-          Unauthorized(views.html.error(UNAUTHORIZED, "Du har inte behörighet att skapa undersökningar för användaren " + poll.consultant.firstName + " " + poll.consultant.lastName))
+          Unauthorized(views.html.error(UNAUTHORIZED, Messages("polls.edit.createunauthorized", poll.consultant.firstName + " " + poll.consultant.lastName)))
         }
       }
     )
@@ -67,7 +68,7 @@ object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
     } else if(isSelf(loggedInUser, pollToUpdate.consultant)){
       Ok(views.html.polls.edit(pollForm.fill(pollToUpdate), uuidToUpdate = Option(uuid), consultants = consultants, forConsultantId = Option(loggedInUser.get.id.get)))
     } else {
-      Unauthorized(views.html.error(UNAUTHORIZED, "Du har inte behörighet att redigera undersökningar för användaren " + pollToUpdate.consultant.firstName + " " + pollToUpdate.consultant.lastName))
+      Unauthorized(views.html.error(UNAUTHORIZED,  Messages("polls.edit.error.editunauthorized", pollToUpdate.consultant.firstName + " " + pollToUpdate.consultant.lastName)))
     }
   }
 
@@ -83,7 +84,7 @@ object PollsSecured extends Controller with AuthElement with AuthConfigImpl {
           Poll.update(uuid, poll)
           Redirect(routes.Polls.show(uuid))
         } else {
-          Unauthorized(views.html.error(UNAUTHORIZED, "Du har inte behörighet att redigera undersökningar för användaren " + poll.consultant.firstName + " " + poll.consultant.lastName))
+          Unauthorized(views.html.error(UNAUTHORIZED,  Messages("polls.edit.error.editunauthorized", poll.consultant.firstName + " " + poll.consultant.lastName)))
         }
       }
     )

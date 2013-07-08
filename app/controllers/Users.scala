@@ -8,6 +8,7 @@ import play.api.data.Form
 import jp.t2v.lab.play2.auth.AuthElement
 import models.security.{NormalUser, Administrator}
 import util.AuthHelper._
+import play.api.i18n.Messages
 
 object Users extends Controller with AuthElement with AuthConfigImpl {
 
@@ -66,7 +67,7 @@ object Users extends Controller with AuthElement with AuthConfigImpl {
       "id" -> ignored(NotAssigned:Pk[Long]),
       "firstName" -> nonEmptyText(maxLength = 127),
       "lastName" -> nonEmptyText(maxLength = 127),
-      "email" -> play.api.data.Forms.email.verifying("Epostadressen används av någon annan", User.findByEmail(_).isEmpty),
+      "email" -> play.api.data.Forms.email.verifying(Messages("users.edit.error.notuniqueemail"), User.findByEmail(_).isEmpty),
       "phone" -> text(maxLength = 127),
       "administrator" -> boolean,
       "password" -> nonEmptyText(minLength = 8, maxLength = 127)
@@ -94,7 +95,7 @@ object Users extends Controller with AuthElement with AuthConfigImpl {
       "administrator" -> boolean,
       "password" -> nonEmptyText(minLength = 8, maxLength = 127)
     )(toUser)(fromUser)
-      .verifying("Epostadressen används av någon annan", user => User.verifyUniqueEmail(user))
+      .verifying(Messages("users.edit.error.notuniqueemail"), user => User.verifyUniqueEmail(user))
   )
 
 

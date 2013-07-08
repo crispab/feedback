@@ -1,4 +1,4 @@
-@(userForm: Form[User], idToUpdate: Option[Long] = None)(implicit loggedInUser: Option[User])
+@(userForm: Form[User], idToUpdate: Option[Long] = None)(implicit loggedInUser: Option[User], lang: Lang)
 
 @import util.AuthHelper._
 @import util.FormHelper._
@@ -24,18 +24,18 @@
 }
 
 
-@page("Redigera konsulter" +  field("firstName") + field("lastName"), section = Users) {
+@page(Messages("users.edit.title") +  field("firstName") + field("lastName"), section = Users) {
 
   @if(updating()) {
-    @breadcrumb(Seq("Konsulter" -> routes.Users.list(), field("firstName") + " " + field("lastName") -> routes.Users.show(idToUpdate.get)),
-      "Redigera")
+    @breadcrumb(Seq(Messages("navigation.consultants") -> routes.Users.list(), field("firstName") + " " + field("lastName") -> routes.Users.show(idToUpdate.get)),
+      Messages("navigation.edit"))
   } else {
-    @breadcrumb(Seq("Konsulter" -> routes.Users.list()), "Ny")
+    @breadcrumb(Seq(Messages("navigation.consultants") -> routes.Users.list()), Messages("navigation.new"))
   }
 
   <div class="row">
     <div class="span5">
-      <h2>@if(updating()) {Redigera} else {Ny} Konsult</h2>
+      <h2>@if(updating()) {@Messages("menu.edit")} else {@Messages("navigation.new")} @Messages("model.consultant")</h2>
     </div>
   </div>
 
@@ -45,57 +45,57 @@
         <fieldset>
 
           <div class='control-group @hasErrors("firstName")'>
-            <label class="control-label" for="firstName">Förnamn</label>
+            <label class="control-label" for="firstName">@Messages("model.consultant.firstname")</label>
             <div class="controls">
               <input type="text" maxlength="127" class="input-xlarge" id="firstName" name="firstName" value='@field("firstName")' required="" />
-              <span class="show-on-error">Fyll i ett förnamn</span>
+              <span class="show-on-error">@Messages("users.edit.error.firstname")</span>
             </div>
           </div>
 
           <div class='control-group @hasErrors("lastName")'>
-            <label class="control-label" for="lastName">Efternamn</label>
+            <label class="control-label" for="lastName">@Messages("model.consultant.lastname")</label>
             <div class="controls">
               <input type="text" maxlength="127" class="input-xlarge" id="lastName" name="lastName" value='@field("lastName")' required="" />
-              <span class="show-on-error">Fyll i ett efternamn</span>
+              <span class="show-on-error">@Messages("users.edit.error.lastname")</span>
             </div>
           </div>
 
 
           <div class='control-group @hasErrors("email")'>
-            <label class="control-label" for="email">Epost</label>
+            <label class="control-label" for="email">@Messages("model.consultant.email")</label>
             <div class="controls">
               <input type="email" maxlength="127" class="input-xlarge" id="email" name="email" value='@field("email")' required="" />
-              <span class="show-on-error">Fyll i en korrekt epostadress</span>
+              <span class="show-on-error">@Messages("users.edit.error.email")</span>
             </div>
           </div>
 
           <div class='control-group @hasErrors("phone")'>
-            <label class="control-label" for="phone">Telefon</label>
+            <label class="control-label" for="phone">@Messages("model.consultant.phone")</label>
             <div class="controls">
               <input type="tel" maxlength="127" class="input-xlarge" id="phone" name="phone" value='@field("phone")' />
-              <span class="show-on-error">Ogiltigt telefonnummer</span>
+              <span class="show-on-error">@Messages("users.edit.error.phone")</span>
             </div>
           </div>
 
           <div class='control-group @hasErrors("administrator")'>
-            <label class="control-label" for="administrator">Administratör</label>
+            <label class="control-label" for="administrator">@Messages("model.consultant.administrator")</label>
             <div class="controls">
               <input type="checkbox" class="input-xlarge" id="administrator" name="administrator" value="true" @if(userIsAdmin()){checked=""} @if(!isAdmin(loggedInUser)){disabled=""}/>
             </div>
           </div>
 
           <div class='control-group @hasErrors("password")'>
-            <label class="control-label" for="password">Lösenord</label>
+            <label class="control-label" for="password">@Messages("model.consultant.password")</label>
             <div class="controls">
               <input type="password" maxlength="127" class="input-xlarge" id="password" name="password" value='@field("password")' required="" />
-              <span class="show-on-error">Du måste ange ett lösenord, minst 8 tecken</span>
+              <span class="show-on-error">@Messages("users.edit.error.password")</span>
             </div>
           </div>
 
           @if(userForm.hasErrors || userForm.hasGlobalErrors) {
           <div class="alert alert-error">
             <a class="close" data-dismiss="alert" href="#">×</a>
-            <h4 class="alert-heading">Inmatningsfel</h4>
+            <h4 class="alert-heading">@Messages("application.edit.error")</h4>
             <p>@errors(userForm).mkString(", ")</p>
           </div>
           }
@@ -104,10 +104,10 @@
 
           <div class="form-actions">
             <button type="submit" class="btn btn-primary" id="action" name="action" value="save"><i
-                    class="icon-ok icon-white"></i>Spara
+                    class="icon-ok icon-white"></i> @Messages("navigation.save")
             </button>
             <button type="button" class="btn" id="cancel" onClick='history.go(-1)'><i
-                    class="icon-ban-circle"></i>Avbryt
+                    class="icon-ban-circle"></i> @Messages("navigation.cancel")
             </button>
           </div>
         </fieldset>
